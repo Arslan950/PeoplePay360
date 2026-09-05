@@ -119,7 +119,8 @@ button:disabled { cursor: wait; opacity: .65; }
 .auth-shell::before, .auth-shell::after { content: ''; position: absolute; border-radius: 50%; pointer-events: none; }
 .auth-shell::before { width: 380px; height: 380px; right: -130px; top: -150px; background: rgba(177, 220, 203, .32); }
 .auth-shell::after { width: 260px; height: 260px; left: -120px; bottom: -110px; background: rgba(211, 231, 220, .5); }
-.auth-card, .form-card { width: min(100%, 440px); box-sizing: border-box; background: rgba(255, 255, 255, .92); border: 1px solid rgba(255, 255, 255, .9); border-radius: 18px; padding: 40px; box-shadow: 0 24px 70px rgba(28, 73, 59, .13); position: relative; z-index: 1; }
+.auth-card { width: min(100%, 440px); box-sizing: border-box; background: rgba(255, 255, 255, .92); border: 1px solid rgba(255, 255, 255, .9); border-radius: 18px; padding: 40px; box-shadow: 0 24px 70px rgba(28, 73, 59, .13); position: relative; z-index: 1; }
+.form-card { width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, .92); border: 1px solid rgba(255, 255, 255, .9); border-radius: 18px; padding: 40px; box-shadow: 0 24px 70px rgba(28, 73, 59, .13); position: relative; z-index: 1; }
 .auth-card h1, .form-card h1, .page-header h1 { margin: 8px 0 10px; font-size: 36px; line-height: 1.1; letter-spacing: -.8px; }
 .auth-card > .muted { max-width: 30ch; font-size: 15px; line-height: 1.55; }
 .auth-note { margin-top: 24px; color: #789089; font-size: 12px; line-height: 1.5; text-align: center; }
