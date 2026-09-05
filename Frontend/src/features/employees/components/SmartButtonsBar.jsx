@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiRequest } from "../../../common/utils/api";
 import { getAttendance } from "../../attendance/attendanceApi";
+import { getContracts } from "../../contracts/contractApi";
 import { getRequests } from "../../timeoff/timeoffApi";
 
 export default function SmartButtonsBar({ employeeId }) {
@@ -15,11 +15,11 @@ export default function SmartButtonsBar({ employeeId }) {
         const records = await request();
         if (isCurrent) setCounts((current) => ({ ...current, [key]: Array.isArray(records) ? records.length : undefined }));
       } catch {
-        // Contracts are still a placeholder; a failed count must not break the form.
+        // A failed count must not break the employee form.
       }
     };
 
-    loadCount("contracts", () => apiRequest(`/contracts?employee=${employeeId}`));
+    loadCount("contracts", () => getContracts({ employee: employeeId }));
     loadCount("attendance", () => getAttendance({ employee: employeeId }));
     loadCount("timeOff", () => getRequests({ employee: employeeId }));
 
