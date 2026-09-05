@@ -883,17 +883,107 @@ td small {
   gap: 16px;
 }
 
-.employee-card {
+.employee-card,
+.schedule-card,
+.attendance-card {
   background: white;
   border: 1px solid #d8e3df;
   border-radius: 12px;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
 
-.employee-card h2 {
-  margin: 20px 0 4px;
-  font-size: 20px;
+.attendance-card {
+  cursor: pointer;
+}
+
+.schedule-card:hover,
+.attendance-card:hover,
+.employee-card:hover {
+  border-color: #8eafa2;
+  box-shadow: 0 8px 24px rgba(28, 73, 59, .08);
+}
+
+.attendance-card:hover,
+.schedule-card:hover {
+  transform: translateY(-2px);
+}
+
+.employee-card h2,
+.schedule-card h2,
+.attendance-card h2 {
+  margin: 6px 0 4px;
+  font-size: 18px;
   letter-spacing: 0;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-badge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: #56716a;
+  background: #f0f5f3;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.schedule-card-name,
+.attendance-card-name {
+  color: #0d6b5c;
+  font-size: inherit;
+  font-weight: 600;
+  text-align: left;
+}
+
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #374151;
+  margin-top: 4px;
+}
+
+.card-meta p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+}
+
+.card-meta span {
+  color: #6b7280;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #f0f4f2;
+}
+
+.live-duration {
+  color: #0d6b5c;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+
+.attendance-card-action {
+  border: 1px dashed #8eafa2;
+  background: #f7faf8;
 }
 
 /* ── Detail view ─────────────────────────────────────────── */
