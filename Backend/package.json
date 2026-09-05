@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./src/index.js",
-    "seed": "node ./src/db/seed.js"
+    "seed": "node ./src/db/seed.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +23,19 @@
     "mongoose": "^9.9.4"
   },
   "devDependencies": {
+    "fast-check": "^4.9.0",
+    "jest": "^30.5.1",
     "nodemon": "^3.1.14"
+  },
+  "jest": {
+    "type": "module",
+    "extensionsToTreatAsEsm": [".js"],
+    "transform": {},
+    "testMatch": ["**/__tests__/**/*.test.js", "**/?(*.)+(spec|test).js"],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js",
+      "!src/db/**"
+    ]
   }
 }

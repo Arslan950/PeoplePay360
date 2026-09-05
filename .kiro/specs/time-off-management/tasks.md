@@ -38,7 +38,7 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Export function for use in controllers
     - _Requirements: 3.2, 3.3_
   
-  - [ ]* 2.2 Write property tests for duration computation
+  - [x]* 2.2 Write property tests for duration computation
     - **Property 1: Duration is always >= 1 for valid date ranges**
     - **Property 2: Duration from date to (date + n days) equals n + 1**
     - **Property 3: Duration computation is commutative in sign**
@@ -54,7 +54,7 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Return first matching allocation or null
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
   
-  - [ ]* 2.4 Write property tests for allocation selection
+  - [x]* 2.4 Write property tests for allocation selection
     - **Property 4: Returns allocation with remainingDays >= duration**
     - **Property 5: Prefers allocations with validTo = null**
     - **Property 6: Selects earliest validFrom among candidates**
@@ -180,8 +180,8 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Test request body serialization
     - Mock apiRequest wrapper for isolated testing
 
-- [-] 7. Implement Time Off Types tab UI
-  - [ ] 7.1 Create TypesTab component structure
+- [x] 7. Implement Time Off Types tab UI
+  - [x] 7.1 Create TypesTab component structure
     - Modify `Frontend/src/features/timeoff/TimeoffPage.jsx`
     - Add state for active tab selection (default: "requests")
     - Add tab navigation buttons (Requests, Allocations, Time Off Types)
@@ -190,13 +190,13 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Display loading and error states
     - _Requirements: 12.1, 12.3_
   
-  - [ ] 7.2 Implement Time Off Types table display
+  - [x] 7.2 Implement Time Off Types table display
     - Create table with columns: Name, Unit, Requires allocation, Requires approval, Status
     - Render time-off type records from API response
     - Format boolean values as "Yes"/"No" or checkmarks
     - _Requirements: 12.2_
   
-  - [ ] 7.3 Add Time Off Type creation form for approvers
+  - [x] 7.3 Add Time Off Type creation form for approvers
     - Check user role using useAuth hook
     - Display "New type" form only for admin/hr_manager roles
     - Add form fields: name input, unit select, requiresAllocation checkbox, requiresApproval checkbox, status select
@@ -205,22 +205,22 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Display success/error messages
     - _Requirements: 12.4, 12.5_
   
-  - [ ] 7.4 Add Time Off Type edit form for approvers
+  - [x] 7.4 Add Time Off Type edit form for approvers
     - Display edit button/form only for admin/hr_manager roles
     - Pre-populate form with selected type data
     - Handle form submission with updateTimeoffType API call
     - Re-fetch types after successful update
     - _Requirements: 12.5_
 
-- [ ] 8. Implement Allocations tab UI
-  - [ ] 8.1 Create AllocationsTab component structure
+- [x] 8. Implement Allocations tab UI
+  - [x] 8.1 Create AllocationsTab component structure
     - Add AllocationsTab component to TimeoffPage
     - Fetch allocations on mount using getAllocations
     - Display loading and error states
     - Implement role-based filtering (employees see only their own)
     - _Requirements: 13.1, 13.3, 13.4_
   
-  - [ ] 8.2 Implement Allocations table display
+  - [x] 8.2 Implement Allocations table display
     - Create table with columns: Employee, Type, Total, Taken, Remaining, Valid from, Valid to
     - Render allocation records from API response
     - Display computed remainingDays field
@@ -228,7 +228,7 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Show "N/A" for null validity dates
     - _Requirements: 13.2_
   
-  - [ ] 8.3 Add Allocation creation form for approvers
+  - [x] 8.3 Add Allocation creation form for approvers
     - Display "New allocation" form only for admin/hr_manager roles
     - Add form fields: employee selector, type selector, totalDays input, validFrom date, validTo date
     - Fetch employees and types for dropdown options
@@ -237,15 +237,15 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Display success/error messages
     - _Requirements: 13.5_
 
-- [ ] 9. Implement Requests tab UI
-  - [ ] 9.1 Create RequestsTab component structure
+- [x] 9. Implement Requests tab UI
+  - [x] 9.1 Create RequestsTab component structure
     - Add RequestsTab component to TimeoffPage
     - Fetch requests on mount using getRequests
     - Display loading and error states
     - Implement role-based filtering (employees see only their own)
     - _Requirements: 14.1, 14.3, 14.5_
   
-  - [ ] 9.2 Implement Requests table display with actions
+  - [x] 9.2 Implement Requests table display with actions
     - Create table with columns: Employee, Type, Dates, Duration, Status
     - Render request records from API response
     - Format date range (startDate - endDate)
@@ -253,7 +253,7 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Show refusalReason if present for refused requests
     - _Requirements: 14.2_
   
-  - [ ] 9.3 Add Request creation form for employees
+  - [x] 9.3 Add Request creation form for employees
     - Display "Request time off" form for all users
     - Add form fields: type select (dropdown), date range picker (startDate, endDate), reason textarea
     - Fetch time-off types for dropdown options
@@ -262,7 +262,7 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Display success/error messages
     - _Requirements: 14.4_
   
-  - [ ] 9.4 Add approval/refusal actions for approvers
+  - [x] 9.4 Add approval/refusal actions for approvers
     - Display Approve and Refuse buttons on pending requests for admin/hr_manager roles
     - Handle Approve button click with approveRequest API call
     - Display Refuse modal with optional reason textarea on Refuse button click
@@ -271,21 +271,21 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Display success/error messages (including "Insufficient leave balance")
     - _Requirements: 14.6, 14.7_
 
-- [ ] 10. Final integration and wiring
-  - [ ] 10.1 Update SmartButtonsBar with Time Off count
+- [x] 10. Final integration and wiring
+  - [x] 10.1 Update SmartButtonsBar with Time Off count
     - SmartButtonsBar already has placeholder code for time-off
     - Verify the API call uses correct endpoint format (/timeoff/requests)
     - Update if needed to call getRequests from timeoffApi module
     - Verify count display works correctly
     - _Requirements: 16.1, 16.2, 16.3, 16.4_
   
-  - [ ] 10.2 Add URL query parameter support for employee filtering
+  - [x] 10.2 Add URL query parameter support for employee filtering
     - Parse "employee" query parameter from URL in TimeoffPage
     - Pass employee filter to API calls when present
     - Allow approvers to view employee-specific requests/allocations via URL
     - _Requirements: 16.2_
   
-  - [ ] 10.3 Verify role-based UI rendering
+  - [x] 10.3 Verify role-based UI rendering
     - Test employee view shows only own data and limited forms
     - Test approver view shows all data and management forms
     - Test form visibility based on role (employee vs admin/hr_manager)
@@ -298,7 +298,7 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Test balance deduction after request approval
     - Test refusal with reason
 
-- [ ] 11. Final checkpoint - Complete feature verification
+- [x] 11. Final checkpoint - Complete feature verification
   - Ensure all tests pass, ask the user if questions arise.
   - Test complete end-to-end workflows (type creation → allocation → request → approval)
   - Verify balance tracking accuracy
