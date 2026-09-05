@@ -94,10 +94,6 @@ export default function SchedulesFormPage({ schedule, onSaved, onCancel }) {
               <option value="flexible">Flexible</option>
             </select>
           </label>
-          <label>
-            Timezone
-            <input value={form.timezone || ""} onChange={(event) => setForm({ ...form, timezone: event.target.value })} />
-          </label>
         </div>
         <section className="schedule-pattern">
           <div className="schedule-pattern-header">

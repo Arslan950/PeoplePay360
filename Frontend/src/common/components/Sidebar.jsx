@@ -1,4 +1,5 @@
 import { NavLink, useNavigate, Link } from 'react-router-dom'
+import { LogOut } from 'lucide-react'
 import { useAuth } from '../../features/auth/AuthContext'
 
 const navigationItems = [
@@ -43,7 +44,9 @@ export default function Sidebar() {
           <strong>{user?.employeeName || user?.email}</strong>
           <span>{user?.role?.replaceAll('_', ' ')}</span>
         </Link>
-        <button className="navbar-signout" onClick={handleSignOut} type="button">Sign out</button>
+        <button className="navbar-signout" onClick={handleSignOut} type="button" aria-label="Sign out" title="Sign out">
+          <LogOut size={18} strokeWidth={2} aria-hidden="true" />
+        </button>
       </div>
     </aside>
   )
