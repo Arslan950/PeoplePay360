@@ -60,8 +60,8 @@ export default function ContractsPage() {
         </thead>
         <tbody>
           {contracts.map((contract) => (
-            <tr key={contract._id}>
-              <td>{canManageContracts ? <button className="link-button" onClick={() => setEditingContract(contract)}>{contract.code}</button> : contract.code}</td>
+            <tr className="data-row-hover" key={contract._id}>
+              <td>{canManageContracts ? <button className="link-button" onClick={() => setEditingContract(contract)}>{contract.code || contract.contractNumber || contract._id}</button> : (contract.code || contract.contractNumber || contract._id)}</td>
               {!scopedEmployeeId && <td>{contract.employee?.name || contract.employee?._id || "-"}</td>}
               <td>{contract.startDate ? new Date(contract.startDate).toLocaleDateString() : "-"}</td>
               <td>{contract.endDate ? new Date(contract.endDate).toLocaleDateString() : "Ongoing"}</td>

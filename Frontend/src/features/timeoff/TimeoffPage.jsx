@@ -192,7 +192,7 @@ function RequestsTab({ isApprover, isEmployee, employeeFilter }) {
 						</thead>
 						<tbody>
 							{requests.map((request) => (
-								<tr key={request._id}>
+								<tr className="data-row-hover" key={request._id}>
 									<td>{request.employee?.name || "-"}</td>
 									<td>{request.timeoffType?.name || "-"}</td>
 									<td>
@@ -384,7 +384,7 @@ function AllocationsTab({ isApprover, employeeFilter }) {
 						</thead>
 						<tbody>
 							{allocations.map((allocation) => (
-								<tr key={allocation._id}>
+								<tr className="data-row-hover" key={allocation._id}>
 									<td>{allocation.employee?.name || "-"}</td>
 									<td>{allocation.timeoffType?.name || "-"}</td>
 									<td>{allocation.totalDays}</td>
@@ -539,7 +539,7 @@ function TypesTab({ isApprover }) {
 						</thead>
 						<tbody>
 							{types.map((type) => (
-								<tr key={type._id}>
+								<tr className="data-row-hover" key={type._id}>
 									<td>{type.name}</td>
 									<td>{type.unit}</td>
 									<td>{type.requiresAllocation ? "Yes" : "No"}</td>

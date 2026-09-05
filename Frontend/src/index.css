@@ -883,6 +883,22 @@ td small {
   text-align: left;
 }
 
+.employee-row {
+  transition: background-color .15s ease;
+}
+
+.employee-row:hover td {
+  background: #f3faf7;
+}
+
+.data-row-hover {
+  transition: background-color .15s ease;
+}
+
+.data-row-hover:hover td {
+  background: #f3faf7;
+}
+
 .employee-profile-link {
   display: block;
   margin-top: 5px;

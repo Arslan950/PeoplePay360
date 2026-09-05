@@ -65,7 +65,7 @@ export default function SchedulesListPage({ onAdd, onEdit }) {
           </thead>
           <tbody>
             {schedules.map((schedule) => (
-              <tr key={schedule._id}>
+              <tr className="data-row-hover" key={schedule._id}>
                 <td>
                   {canManageSchedules ? <button className="link-button" onClick={() => onEdit(schedule)}>{schedule.name}</button> : schedule.name}
                 </td>

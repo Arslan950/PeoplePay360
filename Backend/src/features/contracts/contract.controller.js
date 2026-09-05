@@ -31,6 +31,7 @@ const pickContractFields = (body) => Object.fromEntries(
 
 const attachComputedStatus = (record) => {
 	const plain = record.toObject ? record.toObject() : { ...record };
+	plain.code = plain.code || plain.contractNumber || plain._id?.toString();
 	plain.status = resolveStatus(plain);
 	return plain;
 };

@@ -91,7 +91,7 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
             </thead>
             <tbody>
               {visibleEmployees.map((employee) => (
-                <tr key={employee._id}>
+                <tr className="employee-row" key={employee._id}>
                   <td>
                     {canManageEmployees ? <button className="link-button" onClick={() => onEdit(employee)}>{employee.name}</button> : employee.name}
                     <small>{employee.email}</small>
