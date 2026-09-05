@@ -3,6 +3,7 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import { Employee } from "../features/employees/employee.model.js";
 import { User } from "../features/users/user.model.js";
+import { TimeoffType } from "../features/timeoff/timeoffType.model.js";
 import { hashPassword } from "../features/users/user.service.js";
 
 const adminEmail = (process.env.SEED_ADMIN_EMAIL || "admin@peoplepay360.local").toLowerCase().trim();
@@ -41,6 +42,12 @@ const employees = [
     },
 ];
 
+const timeoffTypes = [
+    { name: "Annual Leave", unit: "days", requiresAllocation: true, requiresApproval: true, status: "active" },
+    { name: "Sick Leave", unit: "days", requiresAllocation: true, requiresApproval: true, status: "active" },
+    { name: "Unpaid Leave", unit: "days", requiresAllocation: false, requiresApproval: true, status: "active" },
+];
+
 const seed = async () => {
     if (!process.env.MONGODB_URI) throw new Error("MONGODB_URI is required");
 
@@ -71,6 +78,12 @@ const seed = async () => {
         );
     }
 
+    await Promise.all(timeoffTypes.map((type) => TimeoffType.updateOne(
+        { name: type.name },
+        { $setOnInsert: type },
+        { upsert: true, runValidators: true, setDefaultsOnInsert: true },
+    )));
+
     console.log(`Seeded admin: ${admin.email}`);
     if (!adminWasCreated) {
         console.log("Admin already existed; its password was not changed.");
@@ -80,6 +93,7 @@ const seed = async () => {
         console.log(`Generated admin password (share now; it is not stored in plaintext): ${adminPassword}`);
     }
     console.log(`Seeded employees: ${employees.length}`);
+    console.log(`Seeded time off types: ${timeoffTypes.length}`);
 };
 
 try {
