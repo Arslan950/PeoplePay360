@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../features/auth/AuthContext'
-import AttendanceStatusWidget from '../../features/attendance/AttendanceStatusWidget'
 
 const navigationItems = [
   { id: 'dashboard', label: 'Dashboard', path: '/dashboard' },
@@ -44,7 +43,6 @@ export default function Sidebar() {
           <strong>{user?.email}</strong>
           <span>{user?.role?.replaceAll('_', ' ')}</span>
         </div>
-        <AttendanceStatusWidget />
         <button className="navbar-signout" onClick={handleSignOut} type="button">Sign out</button>
       </div>
     </aside>

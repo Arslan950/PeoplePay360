@@ -16,27 +16,40 @@ const timeToMinutes = (value) => {
 	return (Number(match[1]) * 60) + Number(match[2]);
 };
 
+const getLocalDateString = (value) => {
+	const date = new Date(value);
+	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+};
+
 const attachComputedFields = (record) => {
 	const data = typeof record.toObject === "function" ? record.toObject() : record;
 	const durationMinutes = data.durationMinutes;
 	const workedHours = durationMinutes == null ? null : durationMinutes / 60;
-
-	if (durationMinutes == null) return { ...data, workedHours, overtime: null };
 
 	const weekday = new Date(data.checkIn).toLocaleDateString("en-US", { weekday: "long" });
 	const weeklyPattern = data.employee?.workingSchedule?.weeklyPattern;
 	const entry = Array.isArray(weeklyPattern)
 		? weeklyPattern.find((item) => item?.day === weekday && item.isWorkingDay)
 		: null;
+	if (!entry) return { ...data, workedHours, overtime: null, scheduleApplied: false };
+
 	const startMinutes = timeToMinutes(entry?.startTime);
 	const endMinutes = timeToMinutes(entry?.endTime);
 	const breakMinutes = Number(entry?.breakMinutes);
-	const expectedHours = Number.isFinite(startMinutes) && Number.isFinite(endMinutes) && Number.isFinite(breakMinutes)
-		&& endMinutes - startMinutes - breakMinutes > 0
-		? (endMinutes - startMinutes - breakMinutes) / 60
-		: 8;
+	if (!Number.isFinite(startMinutes) || !Number.isFinite(endMinutes) || !Number.isFinite(breakMinutes)
+		|| endMinutes - startMinutes - breakMinutes <= 0) {
+		return { ...data, workedHours, overtime: null, scheduleApplied: false };
+	}
 
-	return { ...data, workedHours, overtime: Number(Math.max(0, workedHours - expectedHours).toFixed(2)) };
+	const scheduleContext = {
+		scheduleName: data.employee?.workingSchedule?.name || null,
+		scheduleApplied: true,
+	};
+	if (durationMinutes == null) return { ...data, workedHours, overtime: null, ...scheduleContext };
+
+	const expectedHours = (endMinutes - startMinutes - breakMinutes) / 60;
+
+	return { ...data, workedHours, overtime: Number(Math.max(0, workedHours - expectedHours).toFixed(2)), ...scheduleContext };
 };
 
 const ensureActiveEmployee = async (employeeId) => {
@@ -75,7 +88,7 @@ const getAttendance = asyncHandler(async (req, res) => {
 		.populate({
 			path: "employee",
 			select: "name email department jobPosition manager workingSchedule",
-			populate: { path: "workingSchedule", select: "weeklyPattern weeklyHours" },
+			populate: { path: "workingSchedule", select: "name weeklyPattern weeklyHours" },
 		})
 		.sort({ checkIn: -1 });
 	return res.status(200).json(new ApiResponse(200, records.map(attachComputedFields)));
@@ -88,7 +101,7 @@ const getAttendanceById = asyncHandler(async (req, res) => {
 		select: "name email department jobPosition manager workingSchedule",
 		populate: [
 			{ path: "manager", select: "name" },
-			{ path: "workingSchedule", select: "weeklyPattern weeklyHours" },
+			{ path: "workingSchedule", select: "name weeklyPattern weeklyHours" },
 		],
 	});
 	if (!record) throw new ApiError(404, "Attendance record not found");
@@ -110,11 +123,16 @@ const checkIn = asyncHandler(async (req, res) => {
 
 	await ensureActiveEmployee(targetEmployee);
 
-	const openRecord = await Attendance.findOne({ employee: targetEmployee, checkOut: null });
-	if (openRecord) throw new ApiError(409, "Employee is already checked in");
+	const checkInAt = new Date();
+	const today = getLocalDateString(checkInAt);
+	const existingRecord = await Attendance.findOne({ employee: targetEmployee, date: today });
+	if (existingRecord) {
+		if (!existingRecord.checkOut) throw new ApiError(409, "Employee is already checked in");
+		throw new ApiError(409, "Attendance for today has already been recorded. Ask an HR Manager to correct it if this is wrong.");
+	}
 
 	try {
-		const record = await Attendance.create({ employee: targetEmployee, source, notes });
+		const record = await Attendance.create({ employee: targetEmployee, checkIn: checkInAt, source, notes });
 		return res.status(201).json(new ApiResponse(201, record, "Employee checked in"));
 	} catch (error) {
 		if (error?.code === 11000) throw new ApiError(409, "Employee is already checked in");
