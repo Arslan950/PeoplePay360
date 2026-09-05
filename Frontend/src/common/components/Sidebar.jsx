@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../features/auth/AuthContext'
 
 const navigationItems = [
@@ -39,10 +39,10 @@ export default function Sidebar() {
         ))}
       </nav>
       <div className="navbar-footer">
-        <div className="navbar-user">
-          <strong>{user?.email}</strong>
+        <Link className="navbar-user navbar-profile-link" to={`/profile/${user?._id}`}>
+          <strong>{user?.employeeName || user?.email}</strong>
           <span>{user?.role?.replaceAll('_', ' ')}</span>
-        </div>
+        </Link>
         <button className="navbar-signout" onClick={handleSignOut} type="button">Sign out</button>
       </div>
     </aside>

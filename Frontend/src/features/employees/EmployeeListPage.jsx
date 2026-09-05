@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { deactivateEmployee, getEmployees, reactivateEmployee, resetEmployeeCredentials } from "./employeeApi";
 
 export default function EmployeeListPage({ onAdd, onEdit }) {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   const [filters, setFilters] = useState({ department: "", status: "" });
   const [view, setView] = useState("list");
@@ -82,6 +84,7 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
                   <td>
                     {canManageEmployees ? <button className="link-button" onClick={() => onEdit(employee)}>{employee.name}</button> : employee.name}
                     <small>{employee.email}</small>
+                    {employee.user?._id && <button className="link-button employee-profile-link" onClick={() => navigate(`/profile/${employee.user._id}`)}>View profile</button>}
                   </td>
                   <td>{employee.department || "-"}</td>
                   <td>{employee.jobPosition || "-"}</td>
@@ -115,6 +118,7 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
               </h2>
               <p>{employee.jobPosition || "No position"}</p>
               <p className="muted">{employee.department || "No department"}</p>
+              {employee.user?._id && <button className="link-button employee-profile-link" onClick={() => navigate(`/profile/${employee.user._id}`)}>View profile</button>}
               {canManageEmployees && (
                 <button className="link-button" onClick={() => changeStatus(employee)}>
                   {employee.status === "active" ? "Deactivate" : "Reactivate"}

@@ -12,6 +12,7 @@ import AttendancePage from './features/attendance/AttendancePage'
 import AttendanceDetailPage from './features/attendance/AttendanceDetailPage'
 import TimeoffPage from './features/timeoff/TimeoffPage'
 import PayrollPage from './features/payroll/PayrollPage'
+import UserProfilePage from './features/users/UserProfilePage'
 
 function LoginRoute() {
   const { user } = useAuth()
@@ -43,6 +44,7 @@ function AppRoutes() {
         <Route path="/attendance/:id" element={<AttendanceDetailPage />} />
         <Route path="/timeoff" element={<TimeoffPage />} />
         <Route path="/payroll" element={<PayrollPage />} />
+        <Route path="/profile/:userId" element={<UserProfilePage />} />
       </Route>
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />

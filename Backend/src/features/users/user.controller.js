@@ -12,6 +12,20 @@ const validateId = (id) => {
     if (!mongoose.isValidObjectId(id)) throw new ApiError(400, "Invalid user id");
 };
 
+const getUserDetails = asyncHandler(async (req, res) => {
+    validateId(req.params.id);
+    const isSelf = req.user._id.toString() === req.params.id;
+    if (!isSelf && req.user.role !== "admin") throw new ApiError(403, "You can only view your own profile");
+
+    const user = await User.findById(req.params.id)
+        .select(publicUserFields + " createdAt updatedAt")
+        .populate("employee", "name email phone department jobPosition workLocation manager workingSchedule employeeType status joinDate createdAt")
+        .populate({ path: "employee", populate: [{ path: "manager", select: "name email jobPosition" }, { path: "workingSchedule", select: "name calendarType weeklyHours status" }] });
+    if (!user) throw new ApiError(404, "User not found");
+
+    return res.status(200).json(new ApiResponse(200, { user, employee: user.employee || null }));
+});
+
 const createUser = asyncHandler(async (req, res) => {
     const { email, role, employeeId } = req.body;
     if (!email || !role || !isValidRole(role)) throw new ApiError(400, "email and a valid role are required");
@@ -73,4 +87,4 @@ const reactivateUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, user, "User reactivated"));
 });
 
-export { createUser, updateUserRole, deactivateUser, reactivateUser };
+export { getUserDetails, createUser, updateUserRole, deactivateUser, reactivateUser };
