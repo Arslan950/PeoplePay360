@@ -2,6 +2,7 @@ import express, { urlencoded } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import healthCheckRouter from "./routes/healthCheck.route.js";
+import authRouter from "./features/auth/auth.routes.js"
 import { ApiError } from "./utils/api-error.js";
 
 const app = express();
@@ -37,6 +38,7 @@ app.use((err, req, res, next) => {
 
 app.use(cookieParser());
 app.use("/api/healthcheck", healthCheckRouter);
+app.use("/api/auth",authRouter);
 
 app.get("/", (req, res) => {
     res.send("hello world")
