@@ -2,6 +2,9 @@ import express, { urlencoded } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import healthCheckRouter from "./routes/healthCheck.route.js";
+import authRouter from "./features/auth/auth.routes.js";
+import employeeRouter from "./features/employees/employee.routes.js";
+import userRouter from "./features/users/user.routes.js";
 import { ApiError } from "./utils/api-error.js";
 
 const app = express();
@@ -15,6 +18,12 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+app.use(cookieParser());
+app.use("/api/healthcheck", healthCheckRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/employees", employeeRouter);
+app.use("/api/users", userRouter);
 
 app.use((err, req, res, next) => {
     if (err instanceof ApiError) {
@@ -34,9 +43,6 @@ app.use((err, req, res, next) => {
         message: "Internal Server Error",
     });
 });
-
-app.use(cookieParser());
-app.use("/api/healthcheck", healthCheckRouter);
 
 app.get("/", (req, res) => {
     res.send("hello world")

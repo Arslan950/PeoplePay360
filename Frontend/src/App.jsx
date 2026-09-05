@@ -1,18 +1,21 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
 import './App.css'
+import { useState } from 'react'
+import { AuthProvider, useAuth } from './features/auth/AuthContext'
+import LoginPage from './features/auth/LoginPage'
+import EmployeeListPage from './features/employees/EmployeeListPage'
+import EmployeeFormPage from './features/employees/EmployeeFormPage'
 
-function App() {
-  return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-      <h1 className="text-5xl font-bold text-white">
-        PeoplePay360
-      </h1>
-    </div>
-  )
+function AppContent() {
+  const { user, loading } = useAuth()
+  const [editingEmployee, setEditingEmployee] = useState(undefined)
+  if (loading) return <main className="loading">Loading...</main>
+  if (!user) return <LoginPage />
+  if (editingEmployee !== undefined) return <EmployeeFormPage employee={editingEmployee} onSaved={() => setEditingEmployee(undefined)} />
+  return <EmployeeListPage onAdd={() => setEditingEmployee(null)} onEdit={setEditingEmployee} />
 }
 
+function App() {
+  return <AuthProvider><AppContent /></AuthProvider>
+}
 
 export default App

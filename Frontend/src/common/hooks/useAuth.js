@@ -1,3 +1,1 @@
-export function useAuth() {
-  return null;
-}
+export { useAuth } from "../../features/auth/AuthContext";
