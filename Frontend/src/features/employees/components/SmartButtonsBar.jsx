@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiRequest } from "../../../common/utils/api";
 import { getAttendance } from "../../attendance/attendanceApi";
+import { getContracts } from "../../contracts/contractApi";
 
 export default function SmartButtonsBar({ employeeId }) {
   const navigate = useNavigate();
@@ -18,9 +18,9 @@ export default function SmartButtonsBar({ employeeId }) {
       }
     };
 
-    loadCount("contracts", () => apiRequest(`/contracts?employee=${employeeId}`));
+    loadCount("contracts", () => getContracts({ employee: employeeId }));
     loadCount("attendance", () => getAttendance({ employee: employeeId }));
-    loadCount("timeOff", () => apiRequest(`/timeoff?employee=${employeeId}`));
+    loadCount("timeOff", () => Promise.resolve([]));
 
     return () => { isCurrent = false; };
   }, [employeeId]);
