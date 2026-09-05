@@ -11,15 +11,25 @@
  *   4. TimeoffType       - reuses the same types as seed.js
  *   5. Allocation        - annual/sick leave balances per employee
  *   6. Request           - a mix of pending/approved/refused timeoff requests
- *   7. Contract          - one active contract per employee
- *   8. Attendance        - check-in/out records for the last 5 working days
+ *   7. SalaryStructure/SalaryRule - one "Regular Salary" structure Payroll can
+ *      actually use (Basic -> HRA -> Gross -> Tax -> Net)
+ *   8. Contract          - one RUNNING contract per active employee, linked
+ *      to that Salary Structure (an inactive employee gets an EXPIRED one)
+ *   9. Attendance        - check-in/out records for the last 5 working days
  *
  * All inserts are idempotent (upsert on a natural unique key), so this is
- * safe to re-run. Payroll models (Payrun/Payslip/SalaryStructure/SalaryRule)
- * are still TODO stubs in this repo, so they're intentionally skipped.
+ * safe to re-run.
+ *
+ * FIX (see chat): this file previously created Contracts with `contractNumber`
+ * / `wagePerMonth` fields and no `status`. The live Contract schema uses
+ * `code` (required, unique) / `wageMonthly`, and `status` defaults to
+ * "draft" if not set explicitly. That mismatch made this script crash on
+ * Contract.create() (missing required `code`) and, even if patched to not
+ * crash, would have left every contract as "draft" — meaning Payroll would
+ * never find a "running" contract for anyone, and the Payrun wizard's
+ * eligible-employee list would always be empty. Both are fixed below.
  */
 
-import crypto from "node:crypto";
 import "dotenv/config";
 import mongoose from "mongoose";
 
@@ -27,10 +37,13 @@ import { Employee } from "../features/employees/employee.model.js";
 import { User } from "../features/users/user.model.js";
 import { WorkingSchedule } from "../features/schedules/schedule.model.js";
 import { Contract } from "../features/contracts/contract.model.js";
+import { nextContractNumber } from "../features/contracts/contract.service.js";
 import { Attendance } from "../features/attendance/attendance.model.js";
 import { TimeoffType } from "../features/timeoff/timeoffType.model.js";
 import { Allocation } from "../features/timeoff/allocation.model.js";
 import { Request as TimeoffRequest } from "../features/timeoff/request.model.js";
+import { SalaryStructure } from "../features/payroll/salaryStructure.model.js";
+import { SalaryRule } from "../features/payroll/salaryRule.model.js";
 import { hashPassword } from "../features/users/user.service.js";
 
 const DEFAULT_PASSWORD = process.env.SEED_DUMMY_PASSWORD || "Password@123";
@@ -93,6 +106,18 @@ const timeoffTypes = [
     { name: "Annual Leave", unit: "days", requiresAllocation: true, requiresApproval: true, status: "active" },
     { name: "Sick Leave", unit: "days", requiresAllocation: true, requiresApproval: true, status: "active" },
     { name: "Unpaid Leave", unit: "days", requiresAllocation: false, requiresApproval: true, status: "active" },
+];
+
+// ---------- 7. Salary Structure & Rules ----------
+// One structure: Basic Salary = 100% of contract wage, HRA = 20% of Basic,
+// Gross = Basic + HRA, Tax = 10% of Gross, Net = Gross - Tax.
+// Sequence matters: each rule can only reference a code computed *before* it.
+const salaryRuleDefs = [
+    { name: "Basic Salary", code: "BASIC", category: "basic", sequence: 10, computationType: "percentage", percentageBase: "contract_wage", percentageValue: 100 },
+    { name: "House Rent Allowance", code: "HRA", category: "allowance", sequence: 20, computationType: "percentage", percentageBase: "basic_salary", percentageValue: 20 },
+    { name: "Gross Salary", code: "GROSS", category: "gross", sequence: 30, computationType: "formula", formulaExpression: "BASIC + HRA" },
+    { name: "Income Tax", code: "TAX", category: "deduction", sequence: 40, computationType: "percentage", percentageBase: "gross_salary", percentageValue: 10 },
+    { name: "Net Salary", code: "NET", category: "net", sequence: 50, computationType: "formula", formulaExpression: "GROSS - TAX" },
 ];
 
 const workingDaysBack = (n) => {
@@ -230,8 +255,25 @@ const seed = async () => {
         }
     }
 
-    // 7. One active contract per employee
-    let contractSeq = 1000;
+    // 7. Salary Structure + Rules - "Regular Salary"
+    const structure = await SalaryStructure.findOneAndUpdate(
+        { name: "Regular Salary" },
+        { $setOnInsert: { description: "Standard structure: Basic, HRA, Gross, Tax, Net", isActive: true } },
+        { new: true, upsert: true, setDefaultsOnInsert: true },
+    );
+    for (const rule of salaryRuleDefs) {
+        await SalaryRule.findOneAndUpdate(
+            { code: rule.code, salaryStructure: structure._id },
+            { $set: { ...rule, salaryStructure: structure._id, isActive: true } },
+            { upsert: true, runValidators: true, setDefaultsOnInsert: true },
+        );
+    }
+
+    // 8. One contract per employee, linked to the Regular Salary structure.
+    // Active employees get a RUNNING contract (this is what Payroll's
+    // eligible-employee query actually filters on); the one inactive
+    // employee gets an EXPIRED contract instead, on purpose, to exercise
+    // that path too.
     const wageByPosition = {
         "Engineering Manager": 180000, "Backend Developer": 110000, "Frontend Developer": 105000,
         "HR Manager": 130000, "HR Executive": 65000, "Payroll Manager": 140000, "Payroll Executive": 70000,
@@ -241,22 +283,24 @@ const seed = async () => {
         const employeeId = employeeIdByEmail[e.email];
         const exists = await Contract.findOne({ employee: employeeId });
         if (!exists) {
-            contractSeq += 1;
+            const isActive = e.status === "active";
             await Contract.create({
-                contractNumber: `PP360-${contractSeq}`,
+                code: await nextContractNumber(e.joinDate.getFullYear()),
                 employee: employeeId,
                 department: e.department,
                 jobPosition: e.jobPosition,
                 startDate: e.joinDate,
-                endDate: e.status === "inactive" ? new Date() : null,
-                wagePerMonth: wageByPosition[e.jobPosition] || 50000,
+                endDate: isActive ? null : new Date(),
+                wageMonthly: wageByPosition[e.jobPosition] || 50000,
                 workingSchedule: scheduleIdByName[e.scheduleName] || null,
+                salaryStructure: structure._id,
+                status: isActive ? "running" : "expired",
                 notes: "Seeded dummy contract",
             });
         }
     }
 
-    // 8. Attendance for the last 5 working days, active employees only
+    // 9. Attendance for the last 5 working days, active employees only
     const days = workingDaysBack(5);
     for (const e of activeEmployees) {
         const employeeId = employeeIdByEmail[e.email];
@@ -288,7 +332,8 @@ const seed = async () => {
         console.log(`New logins created with password "${DEFAULT_PASSWORD}" for: ${createdCredentials.join(", ")}`);
     }
     console.log(`Seeded ${timeoffTypes.length} timeoff types, allocations for ${activeEmployees.length} employees, ${sampleRequests.length} sample requests`);
-    console.log(`Seeded ${employees.length} contracts`);
+    console.log(`Seeded 1 salary structure ("Regular Salary") with ${salaryRuleDefs.length} rules`);
+    console.log(`Seeded ${employees.length} contracts (${activeEmployees.length} running, ${employees.length - activeEmployees.length} expired)`);
     console.log(`Seeded attendance for ${activeEmployees.length} employees x ${days.length} days`);
 };
 
