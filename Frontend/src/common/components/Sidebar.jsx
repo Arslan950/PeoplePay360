@@ -4,7 +4,6 @@ import { useAuth } from '../../features/auth/AuthContext'
 import { LogOut, ChevronDown, ChevronRight } from "lucide-react"
 
 const navigationItems = [
-  { id: 'dashboard', label: 'Dashboard', path: '/dashboard' },
   { id: 'employees', label: 'Employees', path: '/employees' },
   { id: 'contracts', label: 'Contracts', path: '/contracts' },
   { id: 'schedules', label: 'Schedules', path: '/schedules' },
@@ -14,6 +13,7 @@ const navigationItems = [
     id: 'payroll',
     label: 'Payroll',
     children: [
+      { id: 'payroll-dashboard', label: 'Dashboard', path: '/payroll/dashboard' },
       { id: 'payroll-payruns', label: 'Payruns', path: '/payroll/payruns' },
       { id: 'payroll-payslips', label: 'Payslips', path: '/payroll/payslips' },
       { id: 'payroll-structures', label: 'Structures', path: '/payroll/structures' },
@@ -50,7 +50,7 @@ export default function Sidebar() {
         {navigationItems.map((item) => {
           if (item.children) {
             return (
-              <div key={item.id} className="navbar-group" style={{ position: 'relative' }}>
+              <div key={item.id} className="navbar-group">
                 <button
                   type="button"
                   className={`navbar-item ${openMenus[item.id] ? 'active' : ''}`}
@@ -79,6 +79,7 @@ export default function Sidebar() {
                         key={child.id}
                         to={child.path}
                         className={({ isActive }) => `navbar-item ${isActive ? 'active' : ''}`}
+                        onClick={() => setOpenMenus((current) => ({ ...current, [item.id]: false }))}
                       >
                         {child.label}
                       </NavLink>

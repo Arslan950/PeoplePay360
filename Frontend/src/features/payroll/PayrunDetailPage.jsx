@@ -35,7 +35,7 @@ export default function PayrunDetailPage() {
   if (!data) return <main className="app-shell"><p className="error">{error}</p></main>;
   const { payrun, payslips } = data;
 
-  return <main className="app-shell">
+  return <main className="app-shell payroll-screen">
     <header className="page-header"><div><p className="eyebrow">Payrun / {payrun.name}</p><h1>{payrun.name}</h1><p className="muted">Open one Payrun to compute and manage its payslips.</p></div><div className="page-actions"><button type="button" className="secondary" onClick={() => navigate(-1)}>Back</button></div></header>
     <section className="payrun-overview panel-card">
       <div className="payrun-overview-head"><div><strong>{periodLabel(payrun.period)}</strong><small>{payrun.salaryStructure?.name || "Salary structure unavailable"}</small></div><span className={`status ${badgeClass(payrun.status)}`}>{payrun.status}</span></div>

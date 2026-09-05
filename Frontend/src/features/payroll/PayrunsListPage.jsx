@@ -79,7 +79,7 @@ function PayrunWizard({ structures, onClose, onCreated }) {
         <div className="table-wrap payroll-selection-table"><table>
           <thead><tr><th><input aria-label="Select all employees" type="checkbox" checked={filteredEligible.length > 0 && filteredEligible.every((employee) => selectedIds.includes(employee._id))} onChange={(event) => setSelectedIds(event.target.checked ? eligible.map((employee) => employee._id) : [])} /></th><th>Employee</th><th>Working Hours</th><th>Start Date</th><th>Wage</th></tr></thead>
           <tbody>{filteredEligible.map((employee) => <tr key={employee._id}><td><input aria-label={`Select ${employee.name}`} type="checkbox" checked={selectedIds.includes(employee._id)} onChange={() => toggle(employee._id)} /></td><td>{employee.name}<small>{employee.department || "No department"}</small></td><td>{employee.workingHours}</td><td>{new Date(employee.startDate).toLocaleDateString()}</td><td>{Number(employee.wage).toLocaleString()}</td></tr>)}
-          {!filteredEligible.length && <tr><td colSpan="5" className="empty-state">No eligible employees for this period.</td></tr>}</tbody>
+          {!filteredEligible.length && <tr><td colSpan="5" className="empty-state">No eligible employees — check that at least one employee has a Running contract covering this period.</td></tr>}</tbody>
         </table></div>
         {error && <p className="error">{error}</p>}
         <div className="form-actions payroll-wizard-actions"><button className="secondary" type="button" onClick={() => setStep(1)}>Back</button><button type="button" onClick={createPayrun} disabled={saving || !selectedIds.length}>Create Payrun</button></div>
@@ -106,7 +106,7 @@ export default function PayrunsListPage() {
   useEffect(() => { load(); }, []);
   const filtered = useMemo(() => payruns.filter((payrun) => `${payrun.name} ${formatPeriod(payrun.period)}`.toLowerCase().includes(query.toLowerCase())), [payruns, query]);
 
-  return <main className="app-shell">
+  return <main className="app-shell payroll-screen">
     <header className="page-header"><div><p className="eyebrow">PeoplePay360 / Payroll</p><h1>Payruns</h1></div><div className="page-actions"><button type="button" onClick={() => setShowWizard(true)}>NEW</button></div></header>
     <div className="toolbar"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search payruns…" /></div>
     {error && <p className="error">{error}</p>}
