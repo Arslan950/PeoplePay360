@@ -62,7 +62,7 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Create test file with generated mock allocation data
     - Use fast-check generators for test data
 
-- [x] 3. Implement controller layer handlers
+- [ ] 3. Implement controller layer handlers
   - [x] 3.1 Implement Time Off Type controllers
     - Modify `Backend/src/features/timeoff/timeoff.controller.js`
     - Implement `getTimeoffTypes(req, res)` with status query filter
@@ -125,8 +125,8 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Test error scenarios (invalid input, missing records, insufficient permissions)
     - Test balance deduction logic in approval controller
 
-- [ ] 4. Set up routes and middleware
-  - [ ] 4.1 Configure Time Off API routes
+- [x] 4. Set up routes and middleware
+  - [x] 4.1 Configure Time Off API routes
     - Modify `Backend/src/features/timeoff/timeoff.routes.js`
     - Add GET /types with requireAuth middleware
     - Add POST /types with requireAuth and requireRole("admin", "hr_manager")
@@ -139,20 +139,20 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Add POST /requests/:id/refuse with requireAuth and requireRole("admin", "hr_manager")
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 9.1, 9.2, 9.3, 10.1, 10.2, 10.3, 10.4, 10.5_
   
-  - [ ] 4.2 Mount time-off router in main application
+  - [x] 4.2 Mount time-off router in main application
     - Modify `Backend/src/app.js`
     - Import timeoff router
     - Mount at /api/timeoff prefix
     - _Requirements: 11.1, 11.2, 11.3, 11.4_
 
-- [ ] 5. Checkpoint - Verify backend implementation
+- [x] 5. Checkpoint - Verify backend implementation
   - Ensure all tests pass, ask the user if questions arise.
   - Test API endpoints manually using a tool like Postman or curl
   - Verify role-based access control works correctly
   - Verify balance deduction logic in approval flow
 
-- [ ] 6. Implement frontend API client
-  - [ ] 6.1 Create timeoffApi module with Time Off Type functions
+- [x] 6. Implement frontend API client
+  - [x] 6.1 Create timeoffApi module with Time Off Type functions
     - Create `Frontend/src/features/timeoff/timeoffApi.js`
     - Implement `getTimeoffTypes(filters = {})` using apiRequest wrapper
     - Implement `createTimeoffType(input)` using apiRequest wrapper
@@ -160,13 +160,13 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Use URLSearchParams for query parameters
     - _Requirements: 15.1, 15.4, 15.5_
   
-  - [ ] 6.2 Add Allocation API functions
+  - [x] 6.2 Add Allocation API functions
     - Add `getAllocations(filters = {})` to timeoffApi module
     - Add `createAllocation(input)` to timeoffApi module
     - Use URLSearchParams for employee filtering
     - _Requirements: 15.2, 15.4, 15.5_
   
-  - [ ] 6.3 Add Request API functions
+  - [x] 6.3 Add Request API functions
     - Add `getRequests(filters = {})` to timeoffApi module
     - Add `createRequest(input)` to timeoffApi module
     - Add `approveRequest(id)` to timeoffApi module

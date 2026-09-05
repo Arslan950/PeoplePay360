@@ -7,6 +7,7 @@ import employeeRouter from "./features/employees/employee.routes.js";
 import scheduleRouter from "./features/schedules/schedule.routes.js";
 import userRouter from "./features/users/user.routes.js";
 import attendanceRouter from "./features/attendance/attendance.routes.js";
+import timeoffRouter from "./features/timeoff/timeoff.routes.js";
 import { ApiError } from "./utils/api-error.js";
 
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api/employees", employeeRouter);
 app.use("/api/schedules", scheduleRouter);
 app.use("/api/users", userRouter);
 app.use("/api/attendance", attendanceRouter);
+app.use("/api/timeoff", timeoffRouter);
 
 app.use((err, req, res, next) => {
     if (err instanceof ApiError) {
