@@ -7,6 +7,7 @@ export default function SchedulesListPage({ onAdd, onEdit }) {
   const [schedules, setSchedules] = useState([]);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [view, setView] = useState("list");
   const canManageSchedules = user?.role === "admin" || user?.role === "hr_manager";
 
   const load = () => {
@@ -44,35 +45,87 @@ export default function SchedulesListPage({ onAdd, onEdit }) {
         <option value="active">Active</option>
         <option value="archived">Archived</option>
       </select>
+      <button className="secondary" type="button" onClick={() => setView(view === "list" ? "kanban" : "list")}>
+        {view === "list" ? "Kanban view" : "List view"}
+      </button>
     </section>
     {error && <p className="error">{error}</p>}
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Calendar type</th>
-            <th>Days / week</th>
-            <th>Hours / week</th>
-            <th>Status</th>
-            {canManageSchedules && <th>Actions</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {schedules.map((schedule) => (
-            <tr key={schedule._id}>
-              <td>
-                {canManageSchedules ? <button className="link-button" onClick={() => onEdit(schedule)}>{schedule.name}</button> : schedule.name}
-              </td>
-              <td>{schedule.calendarType || "fixed"}</td>
-              <td>{Array.isArray(schedule.weeklyPattern) ? schedule.weeklyPattern.filter((entry) => entry?.isWorkingDay).length : 0}</td>
-              <td>{Number(schedule.weeklyHours || 0).toFixed(2)}h</td>
-              <td><span className={`status ${schedule.status === "archived" ? "inactive" : schedule.status}`}>{schedule.status}</span></td>
-              {canManageSchedules && <td><button className="link-button" onClick={() => changeStatus(schedule)}>{schedule.status === "active" ? "Archive" : "Reactivate"}</button></td>}
+    {view === "list" ? (
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Calendar type</th>
+              <th>Days / week</th>
+              <th>Hours / week</th>
+              <th>Status</th>
+              {canManageSchedules && <th>Actions</th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {schedules.map((schedule) => (
+              <tr key={schedule._id}>
+                <td>
+                  {canManageSchedules ? <button className="link-button" onClick={() => onEdit(schedule)}>{schedule.name}</button> : schedule.name}
+                </td>
+                <td>{schedule.calendarType || "fixed"}</td>
+                <td>{Array.isArray(schedule.weeklyPattern) ? schedule.weeklyPattern.filter((entry) => entry?.isWorkingDay).length : 0}</td>
+                <td>{Number(schedule.weeklyHours || 0).toFixed(2)}h</td>
+                <td><span className={`status ${schedule.status === "archived" ? "inactive" : schedule.status}`}>{schedule.status}</span></td>
+                {canManageSchedules && <td><button className="link-button" onClick={() => changeStatus(schedule)}>{schedule.status === "active" ? "Archive" : "Reactivate"}</button></td>}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div className="kanban-grid">
+        {schedules.map((schedule) => {
+          const workingDays = Array.isArray(schedule.weeklyPattern)
+            ? schedule.weeklyPattern.filter((entry) => entry?.isWorkingDay).length
+            : 0;
+          return (
+            <article className="schedule-card" key={schedule._id}>
+              <div className="card-top">
+                <span className={`status ${schedule.status === "archived" ? "inactive" : schedule.status}`}>
+                  {schedule.status}
+                </span>
+                <span className="card-badge">{schedule.calendarType || "fixed"}</span>
+              </div>
+              <h2>
+                {canManageSchedules ? (
+                  <button className="link-button schedule-card-name" onClick={() => onEdit(schedule)}>
+                    {schedule.name}
+                  </button>
+                ) : (
+                  schedule.name
+                )}
+              </h2>
+              <div className="card-meta">
+                <p>
+                  <span>Working days:</span>
+                  <strong>{workingDays} days / wk</strong>
+                </p>
+                <p>
+                  <span>Weekly hours:</span>
+                  <strong>{Number(schedule.weeklyHours || 0).toFixed(2)}h / wk</strong>
+                </p>
+              </div>
+              {canManageSchedules && (
+                <div className="card-actions">
+                  <button className="link-button" onClick={() => changeStatus(schedule)}>
+                    {schedule.status === "active" ? "Archive" : "Reactivate"}
+                  </button>
+                  <button className="link-button" onClick={() => onEdit(schedule)}>
+                    Edit schedule
+                  </button>
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    )}
   </main>;
 }

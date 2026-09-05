@@ -13,6 +13,7 @@ import {
 	refuseRequest,
 } from "./timeoffApi";
 import { getEmployees } from "../employees/employeeApi";
+import DateInput from "../../common/components/DateInput";
 
 export default function TimeoffPage() {
 	const { user } = useAuth();
@@ -151,16 +152,16 @@ function RequestsTab({ isApprover, isEmployee, employeeFilter }) {
 							</option>
 						))}
 					</select>
-					<input
-						type="date"
+					<DateInput
 						value={formData.startDate}
 						onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+						placeholder="e.g. 2026-01-15"
 						required
 					/>
-					<input
-						type="date"
+					<DateInput
 						value={formData.endDate}
 						onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+						placeholder="e.g. 2026-01-20"
 						required
 					/>
 					<textarea
@@ -349,15 +350,13 @@ function AllocationsTab({ isApprover, employeeFilter }) {
 							min="0"
 							required
 						/>
-						<input
-							type="date"
-							placeholder="Valid from (optional)"
+						<DateInput
+							placeholder="e.g. 2026-01-01 (optional)"
 							value={formData.validFrom}
 							onChange={(e) => setFormData({ ...formData, validFrom: e.target.value })}
 						/>
-						<input
-							type="date"
-							placeholder="Valid to (optional)"
+						<DateInput
+							placeholder="e.g. 2026-12-31 (optional)"
 							value={formData.validTo}
 							onChange={(e) => setFormData({ ...formData, validTo: e.target.value })}
 						/>
