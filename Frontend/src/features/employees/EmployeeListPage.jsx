@@ -10,7 +10,9 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
   const [error, setError] = useState("");
 
   const load = () => getEmployees(filters).then(setEmployees).catch((requestError) => setError(requestError.message));
-  useEffect(load, [filters.department, filters.status]);
+  useEffect(() => {
+    load();
+  }, [filters.department, filters.status]);
 
   const changeStatus = async (employee) => {
     try {
