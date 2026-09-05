@@ -180,7 +180,7 @@ This implementation plan breaks down the Time Off Management feature into discre
     - Test request body serialization
     - Mock apiRequest wrapper for isolated testing
 
-- [ ] 7. Implement Time Off Types tab UI
+- [-] 7. Implement Time Off Types tab UI
   - [ ] 7.1 Create TypesTab component structure
     - Modify `Frontend/src/features/timeoff/TimeoffPage.jsx`
     - Add state for active tab selection (default: "requests")
