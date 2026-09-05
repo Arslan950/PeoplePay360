@@ -658,8 +658,7 @@ td small {
 }
 
 .payroll-screen .panel-card,
-.payroll-screen .payslip-detail-card,
-.payroll-screen .payroll-config-form {
+.payroll-screen .payslip-detail-card {
   background: #fff;
   border: 1px solid #d8e3df;
   border-radius: 12px;
@@ -670,8 +669,7 @@ td small {
   padding: 24px;
 }
 
-.payroll-screen .payslip-detail-card,
-.payroll-screen .payroll-config-form {
+.payroll-screen .payslip-detail-card {
   width: 100%;
   max-width: none;
   max-height: none;
@@ -738,43 +736,199 @@ td small {
   background: #f3faf7;
 }
 
-.payroll-config-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr);
-  align-items: start;
-  gap: 24px;
+.payroll-screen .formula-preview {
+  display: block;
+  max-width: 30ch;
+  overflow: hidden;
+  color: #29463e;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.payroll-screen .payroll-formula-input {
+  min-height: 180px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.payroll-screen .payroll-formula-note {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.salary-structures-list {
   margin-top: 20px;
 }
 
-.payroll-screen .payroll-config-form {
-  display: block;
+.structures-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e7efec;
+  background: #f7faf8;
 }
 
-.payroll-screen .payroll-config-form h2 {
-  margin: 4px 0 0;
+.structures-list-heading h2 {
+  margin: 0;
+  font-size: 20px;
 }
 
-.payroll-screen .payroll-config-form label {
+.structures-list-heading .muted {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.structures-count {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e2ece9;
+  color: #16463f;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.salary-structures-page .salary-structures-list tbody tr {
+  transition: background-color .15s ease;
+}
+
+.salary-structure-modal {
+  width: min(100%, 920px);
+  max-width: 920px;
+  max-height: calc(100svh - 48px);
+  padding: 0;
+  overflow: auto;
+}
+
+.salary-structure-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid #e7efec;
+}
+
+.salary-structure-modal-header h2 {
+  margin: 4px 0 6px;
+  font-size: 24px;
+}
+
+.modal-dismiss {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #d8e3df;
+  background: #f7faf8;
+  color: #16463f;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.salary-structure-modal-body {
+  padding: 20px 24px 24px;
+}
+
+.structure-editor-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  align-items: start;
+  gap: 24px;
+}
+
+.salary-structure-modal label {
   gap: 6px;
-  margin-top: 16px;
+  margin: 0 0 16px;
 }
 
-.payroll-screen .payroll-rule-grid {
-  gap: 0 16px;
+.salary-structure-modal .formula-field {
+  margin-bottom: 0;
+}
+
+.formula-reference {
+  padding: 16px;
+  border: 1px solid #d8e3df;
+  border-radius: 10px;
+  background: #f7faf8;
+}
+
+.formula-reference h3 {
+  margin: 4px 0 14px;
+  color: #172321;
+  font-size: 16px;
+}
+
+.formula-reference dl {
+  display: grid;
+  gap: 12px;
   margin: 0;
 }
 
-.payroll-screen .structure-rules {
-  margin-top: 20px;
+.formula-reference dl div {
+  display: grid;
+  gap: 4px;
+}
+
+.formula-reference dt,
+.formula-reference dd {
+  margin: 0;
+}
+
+.formula-reference dd,
+.formula-outputs span {
+  color: #4e6960;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.formula-outputs,
+.formula-example {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #d8e3df;
+}
+
+.formula-outputs strong,
+.formula-example > span {
+  color: #29463e;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.formula-example code {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.salary-structure-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
   padding-top: 16px;
   border-top: 1px solid #e7efec;
 }
 
-.payroll-screen .structure-rules ul {
-  display: grid;
-  gap: 6px;
-  margin: 8px 0 0;
-  padding-left: 20px;
+.salary-structure-modal-actions > div {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .payroll-screen .payslip-detail-card .detail-grid {
@@ -833,12 +987,6 @@ td small {
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid #e7efec;
-}
-
-@media (max-width: 900px) {
-  .payroll-config-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ── Status badges ───────────────────────────────────────── */
@@ -1444,7 +1592,6 @@ td small {
 
   .payroll-screen .panel-card,
   .payroll-screen .payslip-detail-card,
-  .payroll-screen .payroll-config-form,
   .payroll-screen .payroll-wizard {
     padding: 20px;
   }
@@ -1459,5 +1606,152 @@ td small {
 
   .payroll-screen .payslip-totals {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .structures-list-heading,
+  .salary-structure-modal-header {
+    align-items: flex-start;
+  }
+
+  .salary-structure-modal-header,
+  .salary-structure-modal-body {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .structure-editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .salary-structure-modal-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .salary-structure-modal-actions > div {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .salary-structure-modal-actions button {
+    flex: 1;
+  }
+}
+
+/* Fix specificity override & expand modal */
+.modal-card.salary-structure-modal {
+  width: 95%;
+  max-width: 960px;
+  max-height: 90svh;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Modernize the Header */
+.salary-structure-modal-header {
+  background: #0d6b5c;
+  color: white;
+  padding: 24px 32px;
+  border-bottom: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.salary-structure-modal-header h2 {
+  color: white;
+  font-size: 24px;
+  margin-top: 4px;
+}
+.salary-structure-modal-header .eyebrow {
+  color: #a8d5c9;
+}
+.salary-structure-modal-header .muted {
+  color: #e2ece9;
+}
+
+/* Sleek close button */
+.modal-dismiss {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  transition: background 0.2s;
+}
+.modal-dismiss:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Modal Body Layout */
+.salary-structure-modal-body {
+  padding: 32px;
+  background: #f4f8f6;
+  overflow-y: auto;
+}
+.structure-editor-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Code Editor Styling for Formula Input */
+.payroll-formula-input {
+  font-family: var(--mono);
+  background: #1e1e1e !important;
+  color: #d4d4d4 !important;
+  border: 1px solid #333 !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  line-height: 1.6 !important;
+  font-size: 14px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+.payroll-formula-input:focus {
+  border-color: #aa3bff !important;
+  box-shadow: 0 0 0 4px rgba(170, 59, 255, 0.2) !important;
+}
+
+/* Polished Reference Sidebar */
+.formula-reference {
+  background: white;
+  border: 1px solid #d8e3df;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 16px rgba(13, 107, 92, 0.04);
+}
+.formula-reference h3 {
+  color: #16463f;
+  border-bottom: 1px solid #e7efec;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+.formula-reference dt code {
+  background: #e2ece9;
+  color: #0d6b5c;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.formula-reference dd {
+  font-size: 13px;
+  color: #5f716b;
+  margin: 6px 0 16px;
+}
+.formula-example {
+  background: #f7faf8;
+  border: 1px dashed #b7d1c8;
+  padding: 16px;
+  border-radius: 8px;
+}
+.formula-example code {
+  color: #29463e;
+  font-size: 12px;
+}
+
+/* Responsive adjustment */
+@media (max-width: 800px) {
+  .structure-editor-grid {
+    grid-template-columns: 1fr;
   }
 }

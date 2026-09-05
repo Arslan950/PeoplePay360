@@ -152,7 +152,7 @@ export default function ContractFormPage({ contract, onSaved, onCancel, employee
             Salary structure
             <select value={form.salaryStructure || ""} onChange={(event) => setForm({ ...form, salaryStructure: event.target.value || null })}>
               <option value="">No structure</option>
-              {salaryStructures.filter((structure) => structure.isActive).map((structure) => <option key={structure._id} value={structure._id}>{structure.name}</option>)}
+              {salaryStructures.map((structure) => <option key={structure._id} value={structure._id}>{structure.name}</option>)}
             </select>
           </label>
           <label>

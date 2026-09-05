@@ -64,7 +64,7 @@ function PayrunWizard({ structures, onClose, onCreated }) {
           Pay Structure
           <select value={form.salaryStructureId} onChange={(event) => setForm({ ...form, salaryStructureId: event.target.value })} required>
             <option value="">Select a structure</option>
-            {structures.filter((structure) => structure.isActive).map((structure) => <option key={structure._id} value={structure._id}>{structure.name}</option>)}
+            {structures.map((structure) => <option key={structure._id} value={structure._id}>{structure.name}</option>)}
           </select>
         </label>
         <div className="detail-grid payroll-date-grid">

@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { Employee } from "../employees/employee.model.js";
 import { Contract } from "../contracts/contract.model.js";
 import { SalaryStructure } from "./salaryStructure.model.js";
-import { SalaryRule } from "./salaryRule.model.js";
 import { Attendance } from "../attendance/attendance.model.js";
 import { Payrun } from "./payrun.model.js";
 import { Payslip } from "./payslip.model.js";
@@ -97,8 +96,8 @@ const createDraftPayrun = asyncHandler(async (req, res) => {
 	if (!name?.trim() || !salaryStructureId) throw new ApiError(400, "name and salaryStructureId are required");
 	validateObjectId(salaryStructureId, "salaryStructure");
 	const normalizedPeriod = validPeriod(period);
-	const salaryStructure = await SalaryStructure.findOne({ _id: salaryStructureId, isActive: true });
-	if (!salaryStructure) throw new ApiError(404, "Active salary structure not found");
+	const salaryStructure = await SalaryStructure.findById(salaryStructureId);
+	if (!salaryStructure) throw new ApiError(404, "Salary structure not found");
 	const draft = await Payrun.create({
 		code: await nextPayrunCode(),
 		name: name.trim(),
@@ -134,8 +133,7 @@ const computePayrun = asyncHandler(async (req, res) => {
 	if (!payrun) throw new ApiError(404, "Payrun not found");
 	if (!['draft', 'computed'].includes(payrun.status)) throw new ApiError(409, "Only draft or computed payruns can be computed");
 	if (!payrun.employees.length) throw new ApiError(400, "Add employees before computing the payrun");
-	const rules = await SalaryRule.find({ salaryStructure: payrun.salaryStructure._id, isActive: true }).sort({ sequence: 1 });
-	const structureWithRules = { ...payrun.salaryStructure.toObject(), rules };
+	const structureWithRules = payrun.salaryStructure;
 	const skipped = [];
 	const payslips = [];
 	const from = toAttendanceDate(payrun.period.startDate);

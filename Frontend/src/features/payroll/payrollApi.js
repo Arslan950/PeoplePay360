@@ -5,11 +5,6 @@ export const createSalaryStructure = (input) => apiRequest("/payroll/salary-stru
 export const updateSalaryStructure = (id, input) => apiRequest(`/payroll/salary-structures/${id}`, { method: "PUT", body: JSON.stringify(input) });
 export const deleteSalaryStructure = (id) => apiRequest(`/payroll/salary-structures/${id}`, { method: "DELETE" });
 
-export const getSalaryRules = () => apiRequest("/payroll/salary-rules");
-export const createSalaryRule = (input) => apiRequest("/payroll/salary-rules", { method: "POST", body: JSON.stringify(input) });
-export const updateSalaryRule = (id, input) => apiRequest(`/payroll/salary-rules/${id}`, { method: "PUT", body: JSON.stringify(input) });
-export const deleteSalaryRule = (id) => apiRequest(`/payroll/salary-rules/${id}`, { method: "DELETE" });
-
 export const getPayruns = () => apiRequest("/payroll/payruns");
 export const getPayrun = (id) => apiRequest(`/payroll/payruns/${id}`);
 export const createPayrunDraft = (input) => apiRequest("/payroll/payruns/draft", { method: "POST", body: JSON.stringify(input) });

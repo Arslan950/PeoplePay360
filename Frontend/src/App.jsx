@@ -16,7 +16,7 @@ import UserProfilePage from './features/users/UserProfilePage'
 function LoginRoute() {
   const { user } = useAuth()
 
-  if (user) return <Navigate to="/payroll/dashboard" replace />
+  if (user) return <Navigate to="/employees" replace />
   return <LoginPage />
 }
 

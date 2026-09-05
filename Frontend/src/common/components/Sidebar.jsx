@@ -17,7 +17,6 @@ const navigationItems = [
       { id: 'payroll-payruns', label: 'Payruns', path: '/payroll/payruns' },
       { id: 'payroll-payslips', label: 'Payslips', path: '/payroll/payslips' },
       { id: 'payroll-structures', label: 'Structures', path: '/payroll/structures' },
-      { id: 'payroll-rules', label: 'Rules', path: '/payroll/rules' },
     ],
   },
 ]

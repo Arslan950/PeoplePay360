@@ -2,7 +2,6 @@ import { Router } from "express";
 import { requireAuth } from "../../common/middleware/auth.middleware.js";
 import { requireRole } from "../../common/middleware/role.middleware.js";
 import { listSalaryStructures, createSalaryStructure, updateSalaryStructure, deleteSalaryStructure } from "./salaryStructure.controller.js";
-import { listSalaryRules, createSalaryRule, updateSalaryRule, deleteSalaryRule } from "./salaryRule.controller.js";
 import { listPayruns, getPayrunById, createDraftPayrun, setEmployeesOnPayrun, computePayrun, validatePayrun, markPaidPayrun, deletePayrun, sendPayslips } from "./payrun.controller.js";
 import { getPayslips, getPayslipById, getPayslipPdf } from "./payslip.controller.js";
 
@@ -12,11 +11,6 @@ router.get("/salary-structures", requireAuth, listSalaryStructures);
 router.post("/salary-structures", requireAuth, requireRole("hr_payroll_manager", "admin"), createSalaryStructure);
 router.put("/salary-structures/:id", requireAuth, requireRole("hr_payroll_manager", "admin"), updateSalaryStructure);
 router.delete("/salary-structures/:id", requireAuth, requireRole("hr_payroll_manager", "admin"), deleteSalaryStructure);
-
-router.get("/salary-rules", requireAuth, listSalaryRules);
-router.post("/salary-rules", requireAuth, requireRole("hr_payroll_manager", "admin"), createSalaryRule);
-router.put("/salary-rules/:id", requireAuth, requireRole("hr_payroll_manager", "admin"), updateSalaryRule);
-router.delete("/salary-rules/:id", requireAuth, requireRole("hr_payroll_manager", "admin"), deleteSalaryRule);
 
 router.post("/payruns/draft", requireAuth, requireRole("hr_payroll_user", "hr_payroll_manager", "admin"), createDraftPayrun);
 router.get("/payruns", requireAuth, listPayruns);

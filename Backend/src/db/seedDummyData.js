@@ -11,8 +11,8 @@
  *   4. TimeoffType       - reuses the same types as seed.js
  *   5. Allocation        - annual/sick leave balances per employee
  *   6. Request           - a mix of pending/approved/refused timeoff requests
- *   7. SalaryStructure/SalaryRule - one "Regular Salary" structure Payroll can
- *      actually use (Basic -> HRA -> Gross -> Tax -> Net)
+ *   7. SalaryStructure - one "Regular Salary" formula Payroll can use
+ *      (Basic -> HRA -> Gross -> Deductions -> Net)
  *   8. Contract          - one RUNNING contract per active employee, linked
  *      to that Salary Structure (an inactive employee gets an EXPIRED one)
  *   9. Attendance        - check-in/out records for the last 5 working days
@@ -43,7 +43,6 @@ import { TimeoffType } from "../features/timeoff/timeoffType.model.js";
 import { Allocation } from "../features/timeoff/allocation.model.js";
 import { Request as TimeoffRequest } from "../features/timeoff/request.model.js";
 import { SalaryStructure } from "../features/payroll/salaryStructure.model.js";
-import { SalaryRule } from "../features/payroll/salaryRule.model.js";
 import { hashPassword } from "../features/users/user.service.js";
 
 const DEFAULT_PASSWORD = process.env.SEED_DUMMY_PASSWORD || "Password@123";
@@ -108,17 +107,16 @@ const timeoffTypes = [
     { name: "Unpaid Leave", unit: "days", requiresAllocation: false, requiresApproval: true, status: "active" },
 ];
 
-// ---------- 7. Salary Structure & Rules ----------
+// ---------- 7. Salary Structure ----------
 // One structure: Basic Salary = 100% of contract wage, HRA = 20% of Basic,
-// Gross = Basic + HRA, Tax = 10% of Gross, Net = Gross - Tax.
-// Sequence matters: each rule can only reference a code computed *before* it.
-const salaryRuleDefs = [
-    { name: "Basic Salary", code: "BASIC", category: "basic", sequence: 10, computationType: "percentage", percentageBase: "contract_wage", percentageValue: 100 },
-    { name: "House Rent Allowance", code: "HRA", category: "allowance", sequence: 20, computationType: "percentage", percentageBase: "basic_salary", percentageValue: 20 },
-    { name: "Gross Salary", code: "GROSS", category: "gross", sequence: 30, computationType: "formula", formulaExpression: "BASIC + HRA" },
-    { name: "Income Tax", code: "TAX", category: "deduction", sequence: 40, computationType: "percentage", percentageBase: "gross_salary", percentageValue: 10 },
-    { name: "Net Salary", code: "NET", category: "net", sequence: 50, computationType: "formula", formulaExpression: "GROSS - TAX" },
-];
+// Gross = Basic + HRA, deductions = 10% of Gross, and Net = Gross - deductions.
+const regularSalaryFormula = [
+    "BASIC = contractWage",
+    "HRA = BASIC * 0.2",
+    "GROSS = BASIC + HRA",
+    "DEDUCTIONS = GROSS * 0.1",
+    "NET = GROSS - DEDUCTIONS",
+].join("; ");
 
 const workingDaysBack = (n) => {
     const days = [];
@@ -255,19 +253,12 @@ const seed = async () => {
         }
     }
 
-    // 7. Salary Structure + Rules - "Regular Salary"
+    // 7. Salary Structure - "Regular Salary"
     const structure = await SalaryStructure.findOneAndUpdate(
         { name: "Regular Salary" },
-        { $setOnInsert: { description: "Standard structure: Basic, HRA, Gross, Tax, Net", isActive: true } },
-        { new: true, upsert: true, setDefaultsOnInsert: true },
+        { $set: { description: "Standard structure: Basic, HRA, Gross, deductions, Net", mathematicalFormula: regularSalaryFormula } },
+        { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
     );
-    for (const rule of salaryRuleDefs) {
-        await SalaryRule.findOneAndUpdate(
-            { code: rule.code, salaryStructure: structure._id },
-            { $set: { ...rule, salaryStructure: structure._id, isActive: true } },
-            { upsert: true, runValidators: true, setDefaultsOnInsert: true },
-        );
-    }
 
     // 8. One contract per employee, linked to the Regular Salary structure.
     // Active employees get a RUNNING contract (this is what Payroll's
@@ -332,7 +323,7 @@ const seed = async () => {
         console.log(`New logins created with password "${DEFAULT_PASSWORD}" for: ${createdCredentials.join(", ")}`);
     }
     console.log(`Seeded ${timeoffTypes.length} timeoff types, allocations for ${activeEmployees.length} employees, ${sampleRequests.length} sample requests`);
-    console.log(`Seeded 1 salary structure ("Regular Salary") with ${salaryRuleDefs.length} rules`);
+    console.log("Seeded 1 salary structure (\"Regular Salary\") with a mathematical formula");
     console.log(`Seeded ${employees.length} contracts (${activeEmployees.length} running, ${employees.length - activeEmployees.length} expired)`);
     console.log(`Seeded attendance for ${activeEmployees.length} employees x ${days.length} days`);
 };
