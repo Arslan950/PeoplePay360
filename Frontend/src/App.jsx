@@ -24,7 +24,7 @@ function AppContent() {
   if (!user) return <LoginPage />
 
   const content = editingEmployee !== undefined
-    ? <EmployeeFormPage employee={editingEmployee} onSaved={() => setEditingEmployee(undefined)} />
+    ? <EmployeeFormPage employee={editingEmployee} onSaved={() => setEditingEmployee(undefined)} onCancel={() => setEditingEmployee(undefined)} />
     : activePage === 'employees'
       ? <EmployeeListPage onAdd={() => setEditingEmployee(null)} onEdit={setEditingEmployee} />
       : <PagePlaceholder title={pageTitles[activePage]} />

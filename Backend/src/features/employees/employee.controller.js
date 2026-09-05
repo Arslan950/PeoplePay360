@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Employee } from "./employee.model.js";
 import { User } from "../users/user.model.js";
-import { hashPassword } from "../users/user.service.js";
+import { generateTempPassword, hashPassword } from "../users/user.service.js";
 import "../schedules/schedule.model.js";
 import { ApiError } from "../../utils/api-error.js";
 import { ApiResponse } from "../../utils/api-response.js";
@@ -83,6 +83,7 @@ const createEmployee = asyncHandler(async (req, res) => {
 			employee: employee._id,
 			passwordHash: await hashPassword(password),
 		});
+
 		employee.user = user._id;
 
 		try {
@@ -106,6 +107,27 @@ const createEmployee = asyncHandler(async (req, res) => {
 	} catch (error) {
 		handleDuplicate(error);
 	}
+});
+
+const resetEmployeeCredentials = asyncHandler(async (req, res) => {
+	validateId(req.params.id);
+
+	const employee = await Employee.findById(req.params.id).populate("user", "email");
+	if (!employee) throw new ApiError(404, "Employee not found");
+	if (!employee.user) throw new ApiError(404, "This employee has no login account");
+
+	const temporaryPassword = generateTempPassword();
+	const user = await User.findByIdAndUpdate(employee.user._id, {
+		passwordHash: await hashPassword(temporaryPassword),
+		isActive: true,
+	});
+	if (!user) throw new ApiError(404, "Employee login account not found");
+
+	return res.status(200).json(new ApiResponse(
+		200,
+		{ email: employee.user.email, temporaryPassword },
+		"Temporary credentials generated; share them securely",
+	));
 });
 
 const updateEmployee = asyncHandler(async (req, res) => {
@@ -139,4 +161,12 @@ const reactivateEmployee = asyncHandler(async (req, res) => {
 	return res.status(200).json(new ApiResponse(200, employee, "Employee reactivated"));
 });
 
-export { getEmployees, getEmployeeById, createEmployee, updateEmployee, deactivateEmployee, reactivateEmployee };
+export {
+	getEmployees,
+	getEmployeeById,
+	createEmployee,
+	resetEmployeeCredentials,
+	updateEmployee,
+	deactivateEmployee,
+	reactivateEmployee,
+};

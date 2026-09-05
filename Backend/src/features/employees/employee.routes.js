@@ -5,6 +5,7 @@ import {
 	getEmployees,
 	getEmployeeById,
 	createEmployee,
+	resetEmployeeCredentials,
 	updateEmployee,
 	deactivateEmployee,
 	reactivateEmployee,
@@ -14,6 +15,7 @@ const router = Router();
 
 router.get("/", requireAuth, getEmployees);
 router.get("/:id", requireAuth, getEmployeeById);
+router.post("/:id/credentials", requireAuth, requireRole("admin", "hr_manager"), resetEmployeeCredentials);
 router.post("/", requireAuth, requireRole("admin"), createEmployee);
 router.put("/:id", requireAuth, requireRole("admin"), updateEmployee);
 router.put("/:id/deactivate", requireAuth, requireRole("admin"), deactivateEmployee);

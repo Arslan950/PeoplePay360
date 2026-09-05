@@ -5,7 +5,7 @@ import { useAuth } from "../auth/AuthContext";
 
 const roles = ["employee", "hr_manager", "hr_payroll_user", "hr_payroll_manager", "admin"];
 
-export default function EmployeeFormPage({ employee, onSaved }) {
+export default function EmployeeFormPage({ employee, onSaved, onCancel }) {
   const { user } = useAuth();
   const [form, setForm] = useState(employee || { name: "", email: "", phone: "", department: "", jobPosition: "", employeeType: "", status: "active", joinDate: "" });
   const [account, setAccount] = useState(employee?.user || null);
@@ -51,6 +51,7 @@ export default function EmployeeFormPage({ employee, onSaved }) {
 
   return (
     <main className="form-shell">
+      <button type="button" className="form-close" aria-label="Close form" onClick={onCancel}>x</button>
       <form className="form-card" onSubmit={save}>
         <p className="eyebrow">Employee record</p>
         <h1>{employee ? "Edit employee" : "Add employee"}</h1>
@@ -82,7 +83,7 @@ export default function EmployeeFormPage({ employee, onSaved }) {
           <h2>Manage account</h2>
           {account ? (
             <>
-              <p>{account.email} · {account.isActive ? "Active" : "Inactive"}</p>
+              <p>{account.email} - {account.isActive ? "Active" : "Inactive"}</p>
               <label>
                 Role
                 <select
@@ -97,23 +98,23 @@ export default function EmployeeFormPage({ employee, onSaved }) {
                   {roles.map((role) => <option key={role}>{role}</option>)}
                 </select>
               </label>
-              <button className="secondary" onClick={() => manageAccount("toggle")}>
+              <button type="button" className="secondary" onClick={() => manageAccount("toggle")}>
                 {account.isActive ? "Deactivate account" : "Reactivate account"}
               </button>
             </>
           ) : (
-            <button onClick={() => manageAccount("create")}>Create login</button>
+            <button type="button" onClick={() => manageAccount("create")}>Create login</button>
           )}
         </section>
       )}
 
       {temporaryPassword && (
-        <div className="modal bg-amber-600">
+        <div className="modal">
           <div className="modal-card">
             <h2>Temporary password</h2>
             <p>{temporaryPassword}</p>
             <p className="muted">Copy it now. It will not be shown again.</p>
-            <button onClick={dismissTemporaryPassword}>Dismiss</button>
+            <button type="button" onClick={dismissTemporaryPassword}>Dismiss</button>
           </div>
         </div>
       )}

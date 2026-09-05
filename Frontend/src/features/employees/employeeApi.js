@@ -5,6 +5,7 @@ export const getEmployees = (filters = {}) => {
   return apiRequest(`/employees${params.size ? `?${params}` : ""}`);
 };
 export const getEmployee = (id) => apiRequest(`/employees/${id}`);
+export const resetEmployeeCredentials = (id) => apiRequest(`/employees/${id}/credentials`, { method: "POST" });
 export const createEmployee = (input) => apiRequest("/employees", { method: "POST", body: JSON.stringify(input) });
 export const updateEmployee = (id, input) => apiRequest(`/employees/${id}`, { method: "PUT", body: JSON.stringify(input) });
 export const deactivateEmployee = (id) => apiRequest(`/employees/${id}/deactivate`, { method: "PUT" });
