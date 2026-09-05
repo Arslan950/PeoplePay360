@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import { Employee } from "./employee.model.js";
+import { User } from "../users/user.model.js";
+import { hashPassword } from "../users/user.service.js";
 import "../schedules/schedule.model.js";
 import { ApiError } from "../../utils/api-error.js";
 import { ApiResponse } from "../../utils/api-response.js";
@@ -18,8 +20,19 @@ const validateId = (id) => {
 };
 
 const handleDuplicate = (error) => {
-	if (error?.code === 11000) throw new ApiError(409, "An employee with that email already exists");
+	if (error?.code === 11000) throw new ApiError(409, "An employee account with that email already exists");
 	throw error;
+};
+
+const getInitialPassword = (email) => {
+	if (typeof email !== "string") throw new ApiError(400, "A valid email address is required");
+	const normalizedEmail = email.toLowerCase().trim();
+	const localPart = normalizedEmail.split("@", 1)[0];
+	if (!localPart || !/^[^\s@]+@[^\s@]+$/.test(normalizedEmail)) {
+		throw new ApiError(400, "A valid email address is required");
+	}
+
+	return { normalizedEmail, password: `${localPart}1234` };
 };
 
 const getEmployees = asyncHandler(async (req, res) => {
@@ -51,9 +64,45 @@ const createEmployee = asyncHandler(async (req, res) => {
 	const data = pickEmployeeFields(req.body);
 	if (!data.name || !data.email) throw new ApiError(400, "name and email are required");
 
+	const { normalizedEmail, password } = getInitialPassword(data.email);
+	data.email = normalizedEmail;
+
 	try {
-		const employee = await Employee.create(data);
-		return res.status(201).json(new ApiResponse(201, employee, "Employee created"));
+		const [existingEmployee, existingUser] = await Promise.all([
+			Employee.exists({ email: normalizedEmail }),
+			User.exists({ email: normalizedEmail }),
+		]);
+		if (existingEmployee || existingUser) {
+			throw new ApiError(409, "An employee account with that email already exists");
+		}
+
+		const employee = new Employee(data);
+		const user = new User({
+			email: normalizedEmail,
+			role: "employee",
+			employee: employee._id,
+			passwordHash: await hashPassword(password),
+		});
+		employee.user = user._id;
+
+		try {
+			await user.save();
+			await employee.save();
+		} catch (error) {
+			// Do not leave an account behind if its employee record cannot be created.
+			if (!user.isNew) await User.deleteOne({ _id: user._id });
+			throw error;
+		}
+
+		const createdEmployee = await Employee.findById(employee._id)
+			.populate("manager", "name email jobPosition")
+			.populate("workingSchedule")
+			.populate("user", "email role isActive");
+		return res.status(201).json(new ApiResponse(
+			201,
+			{ employee: createdEmployee, temporaryPassword: password },
+			"Employee created; share the temporary password securely",
+		));
 	} catch (error) {
 		handleDuplicate(error);
 	}

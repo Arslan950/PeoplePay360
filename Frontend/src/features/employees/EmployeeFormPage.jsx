@@ -17,8 +17,14 @@ export default function EmployeeFormPage({ employee, onSaved }) {
     event.preventDefault();
     try {
       const saved = employee ? await updateEmployee(employee._id, form) : await createEmployee(form);
+      if (!employee) {
+        setTemporaryPassword(saved.temporaryPassword);
+        return;
+      }
       onSaved?.(saved);
-    } catch (requestError) { setError(requestError.message); }
+    } catch (requestError) {
+      setError(requestError.message);
+    }
   };
 
   const manageAccount = async (action) => {
@@ -33,8 +39,84 @@ export default function EmployeeFormPage({ employee, onSaved }) {
         const data = account.isActive ? await deactivateUser(account._id) : await reactivateUser(account._id);
         setAccount(data);
       }
-    } catch (requestError) { setError(requestError.message); }
+    } catch (requestError) {
+      setError(requestError.message);
+    }
   };
 
-  return <main className="form-shell"><form className="form-card" onSubmit={save}><p className="eyebrow">Employee record</p><h1>{employee ? "Edit employee" : "Add employee"}</h1>{["name", "email", "phone", "department", "jobPosition", "employeeType", "joinDate"].map((field) => <label key={field}>{field}<input type={field === "joinDate" ? "date" : field === "email" ? "email" : "text"} value={form[field] || ""} onChange={(event) => setForm({ ...form, [field]: event.target.value })} required={field === "name" || field === "email"} /></label>)}<label>Status<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="active">Active</option><option value="inactive">Inactive</option></select></label>{error && <p className="error">{error}</p>}<button type="submit">Save employee</button></form>{isAdmin && employee && <section className="form-card"><p className="eyebrow">Login access</p><h2>Manage account</h2>{account ? <><p>{account.email} · {account.isActive ? "Active" : "Inactive"}</p><label>Role<select value={account.role} onChange={(event) => { setAccount({ ...account, role: event.target.value }); updateUserRole(account._id, event.target.value).then(setAccount).catch((requestError) => setError(requestError.message)); }}>{roles.map((role) => <option key={role}>{role}</option>)}</select></label><button className="secondary" onClick={() => manageAccount("toggle")}>{account.isActive ? "Deactivate account" : "Reactivate account"}</button></> : <button onClick={() => manageAccount("create")}>Create login</button>}</section>}{temporaryPassword && <div className="modal"><div className="modal-card"><h2>Temporary password</h2><p>{temporaryPassword}</p><button onClick={() => setTemporaryPassword("")}>Dismiss</button></div></div>}</main>;
+  const dismissTemporaryPassword = () => {
+    setTemporaryPassword("");
+    if (!employee) onSaved?.();
+  };
+
+  return (
+    <main className="form-shell">
+      <form className="form-card" onSubmit={save}>
+        <p className="eyebrow">Employee record</p>
+        <h1>{employee ? "Edit employee" : "Add employee"}</h1>
+        {["name", "email", "phone", "department", "jobPosition", "employeeType", "joinDate"].map((field) => (
+          <label key={field}>
+            {field}
+            <input
+              type={field === "joinDate" ? "date" : field === "email" ? "email" : "text"}
+              value={form[field] || ""}
+              onChange={(event) => setForm({ ...form, [field]: event.target.value })}
+              required={field === "name" || field === "email"}
+            />
+          </label>
+        ))}
+        <label>
+          Status
+          <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </label>
+        {error && <p className="error">{error}</p>}
+        <button type="submit">Save employee</button>
+      </form>
+
+      {isAdmin && employee && (
+        <section className="form-card">
+          <p className="eyebrow">Login access</p>
+          <h2>Manage account</h2>
+          {account ? (
+            <>
+              <p>{account.email} · {account.isActive ? "Active" : "Inactive"}</p>
+              <label>
+                Role
+                <select
+                  value={account.role}
+                  onChange={(event) => {
+                    setAccount({ ...account, role: event.target.value });
+                    updateUserRole(account._id, event.target.value)
+                      .then(setAccount)
+                      .catch((requestError) => setError(requestError.message));
+                  }}
+                >
+                  {roles.map((role) => <option key={role}>{role}</option>)}
+                </select>
+              </label>
+              <button className="secondary" onClick={() => manageAccount("toggle")}>
+                {account.isActive ? "Deactivate account" : "Reactivate account"}
+              </button>
+            </>
+          ) : (
+            <button onClick={() => manageAccount("create")}>Create login</button>
+          )}
+        </section>
+      )}
+
+      {temporaryPassword && (
+        <div className="modal bg-amber-600">
+          <div className="modal-card">
+            <h2>Temporary password</h2>
+            <p>{temporaryPassword}</p>
+            <p className="muted">Copy it now. It will not be shown again.</p>
+            <button onClick={dismissTemporaryPassword}>Dismiss</button>
+          </div>
+        </div>
+      )}
+    </main>
+  );
 }
