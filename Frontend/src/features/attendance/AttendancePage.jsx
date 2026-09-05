@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { checkIn, checkOut, getAttendance } from "./attendanceApi";
+import DateInput from "../../common/components/DateInput";
 
 const formatDateValue = (value) => value ? new Date(value).toLocaleString([], { dateStyle: "short", timeStyle: "short" }) : "-";
 const formatDateOnly = (value) => value ? new Date(value).toLocaleDateString([], { dateStyle: "medium" }) : "-";
@@ -88,8 +89,8 @@ export default function AttendancePage() {
     <header className="page-header"><div><p className="eyebrow">PeoplePay360 / Attendance</p><h1>Attendance</h1></div></header>
     <section className="toolbar">
       {!isEmployee && !isScoped && <input placeholder="Employee ID" value={filters.employee} onChange={(event) => setFilters({ ...filters, employee: event.target.value })} />}
-      <input type="date" value={filters.from} onChange={(event) => setFilters({ ...filters, from: event.target.value })} />
-      <input type="date" value={filters.to} onChange={(event) => setFilters({ ...filters, to: event.target.value })} />
+      <DateInput placeholder="From: e.g. 2026-01-01" value={filters.from} onChange={(event) => setFilters({ ...filters, from: event.target.value })} />
+      <DateInput placeholder="To: e.g. 2026-01-31" value={filters.to} onChange={(event) => setFilters({ ...filters, to: event.target.value })} />
       <button className="secondary" type="button" onClick={() => setView(view === "list" ? "kanban" : "list")}>
         {view === "list" ? "Kanban view" : "List view"}
       </button>

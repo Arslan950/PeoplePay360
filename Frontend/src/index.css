@@ -279,7 +279,18 @@ select {
   padding: 10px 12px;
   background: rgba(255, 255, 255, .92);
   color: #172321;
+  font-weight: 400;
   transition: border-color .2s, box-shadow .2s, background-color .2s;
+}
+
+input[type="date"],
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  font-weight: 400;
 }
 
 input:hover,
@@ -303,6 +314,7 @@ textarea {
   background: rgba(255, 255, 255, .92);
   width: 100%;
   box-sizing: border-box;
+  font-weight: 400;
   transition: border-color .2s, box-shadow .2s;
 }
 

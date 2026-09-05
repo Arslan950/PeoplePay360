@@ -1,7 +1,23 @@
 import { useEffect, useState } from "react";
+import DateInput from "../../common/components/DateInput";
 import { getEmployees } from "../employees/employeeApi";
 import { getSchedules } from "../schedules/scheduleApi";
 import { createContract, updateContract } from "./contractApi";
+
+const formatDateForInput = (val) => {
+  if (!val) return "";
+  if (typeof val === "string") {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+    if (val.includes("T")) return val.split("T")[0];
+  }
+  try {
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) return d.toISOString().split("T")[0];
+  } catch {
+    // ignore
+  }
+  return "";
+};
 
 const emptyForm = {
   employee: "",
@@ -17,7 +33,17 @@ const emptyForm = {
 export default function ContractFormPage({ contract, onSaved, onCancel, employeeScope }) {
   const [employees, setEmployees] = useState([]);
   const [schedules, setSchedules] = useState([]);
-  const [form, setForm] = useState(contract || { ...emptyForm, employee: employeeScope || "" });
+  const [form, setForm] = useState(() => {
+    if (contract) {
+      return {
+        ...contract,
+        employee: contract.employee?._id || contract.employee || employeeScope || "",
+        startDate: formatDateForInput(contract.startDate),
+        endDate: formatDateForInput(contract.endDate),
+      };
+    }
+    return { ...emptyForm, employee: employeeScope || "" };
+  });
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -94,11 +120,20 @@ export default function ContractFormPage({ contract, onSaved, onCancel, employee
           </label>
           <label>
             Start date
-            <input type="date" value={form.startDate || ""} onChange={(event) => setForm({ ...form, startDate: event.target.value })} required />
+            <DateInput
+              value={form.startDate || ""}
+              onChange={(event) => setForm({ ...form, startDate: event.target.value })}
+              placeholder="eg: 09-09-2026"
+              required
+            />
           </label>
           <label>
             End date
-            <input type="date" value={form.endDate || ""} onChange={(event) => setForm({ ...form, endDate: event.target.value })} />
+            <DateInput
+              value={form.endDate || ""}
+              onChange={(event) => setForm({ ...form, endDate: event.target.value })}
+              placeholder="eg: 05-09-2028"
+            />
           </label>
           <label>
             Working schedule
