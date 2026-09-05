@@ -1,15 +1,5 @@
 import mongoose from "mongoose";
 
-const bankDetailsSchema = new mongoose.Schema({
-	bankName: { type: String, trim: true, default: "" },
-	accountNumber: { type: String, trim: true, default: "" },
-	routingNumber: { type: String, trim: true, default: "" },
-	ifsc: { type: String, trim: true, default: "" },
-	iban: { type: String, trim: true, default: "" },
-	branchCode: { type: String, trim: true, default: "" },
-	currency: { type: String, trim: true, default: "USD" },
-}, { _id: false });
-
 const employeeSchema = new mongoose.Schema({
 	name: { type: String, required: true, trim: true },
 	email: {
@@ -29,7 +19,6 @@ const employeeSchema = new mongoose.Schema({
 	employeeType: { type: String, trim: true },
 	status: { type: String, enum: ["active", "inactive"], default: "active" },
 	joinDate: { type: Date },
-	bankDetails: { type: bankDetailsSchema, default: () => ({}) },
 	user: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
 }, { timestamps: true });
 
