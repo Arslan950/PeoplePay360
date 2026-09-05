@@ -14,7 +14,7 @@ export default function PayslipsListPage() {
   useEffect(() => { getPayslips().then(setPayslips).catch((requestError) => setError(requestError.message)); }, []);
   const filtered = useMemo(() => payslips.filter((payslip) => `${payslip.employee?.name || ""} ${periodLabel(payslip.period)} ${payslip.payrun?.salaryStructure?.name || ""}`.toLowerCase().includes(query.toLowerCase())), [payslips, query]);
 
-  return <main className="app-shell">
+  return <main className="app-shell payroll-screen">
     <header className="page-header"><div><p className="eyebrow">PeoplePay360 / Payroll</p><h1>Payslips</h1></div></header>
     <div className="toolbar"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search payslips…" /></div>
     {error && <p className="error">{error}</p>}

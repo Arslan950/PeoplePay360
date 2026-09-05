@@ -612,6 +612,235 @@ td small {
   margin-top: 3px;
 }
 
+/* Payroll uses a compact, data-first rhythm without changing the shared theme. */
+.payroll-screen .page-header {
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.payroll-screen .page-header h1 {
+  margin: 4px 0 0;
+  font-size: 32px;
+}
+
+.payroll-screen .toolbar {
+  margin: 12px 0 16px;
+}
+
+.payroll-screen .table-wrap {
+  border-radius: 10px;
+}
+
+.payroll-screen th {
+  padding: 10px 14px;
+  font-size: 11px;
+  letter-spacing: .7px;
+}
+
+.payroll-screen td {
+  padding: 12px 14px;
+  line-height: 1.4;
+}
+
+.payroll-screen .table-wrap tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.payroll-screen .empty-state {
+  padding: 28px 14px;
+  color: #4e6960;
+  text-align: center;
+}
+
+.payroll-screen .status {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.payroll-screen .panel-card,
+.payroll-screen .payslip-detail-card,
+.payroll-screen .payroll-config-form {
+  background: #fff;
+  border: 1px solid #d8e3df;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.payroll-screen .panel-card {
+  padding: 24px;
+}
+
+.payroll-screen .payslip-detail-card,
+.payroll-screen .payroll-config-form {
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  padding: 24px;
+  overflow: visible;
+}
+
+.payroll-screen .payrun-overview {
+  display: grid;
+  gap: 16px;
+}
+
+.payroll-screen .payrun-overview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.payroll-screen .payrun-overview-head > div {
+  display: grid;
+  gap: 4px;
+}
+
+.payroll-screen .payrun-overview-head strong {
+  color: #172321;
+  font-size: 18px;
+}
+
+.payroll-screen .payroll-warning {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #d8e3df;
+  border-radius: 8px;
+  background: #f7faf8;
+  color: #29463e;
+  font-size: 14px;
+}
+
+.payroll-screen .payroll-warning ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.payroll-screen .inline-warning {
+  margin-bottom: 20px;
+}
+
+.payroll-screen .payrun-actions {
+  width: fit-content;
+  margin: 0;
+  padding: 8px;
+  flex-wrap: wrap;
+  border: 1px solid #d8e3df;
+  border-radius: 10px;
+  background: #f7faf8;
+}
+
+.payroll-screen .payroll-payslip-table {
+  margin-top: 16px;
+}
+
+.payroll-screen .selected-row {
+  background: #f3faf7;
+}
+
+.payroll-config-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr);
+  align-items: start;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.payroll-screen .payroll-config-form {
+  display: block;
+}
+
+.payroll-screen .payroll-config-form h2 {
+  margin: 4px 0 0;
+}
+
+.payroll-screen .payroll-config-form label {
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.payroll-screen .payroll-rule-grid {
+  gap: 0 16px;
+  margin: 0;
+}
+
+.payroll-screen .structure-rules {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e7efec;
+}
+
+.payroll-screen .structure-rules ul {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.payroll-screen .payslip-detail-card .detail-grid {
+  gap: 16px 24px;
+  margin-bottom: 20px;
+}
+
+.payroll-screen .payslip-detail-card h2 {
+  margin: 0 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid #e7efec;
+}
+
+.payroll-screen .net-line td {
+  background: #f7faf8;
+  font-weight: 700;
+}
+
+.payroll-screen .payslip-totals {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e7efec;
+  font-size: 14px;
+}
+
+.payroll-screen .payslip-totals span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #d8e3df;
+  border-radius: 8px;
+  background: #f7faf8;
+}
+
+.payroll-screen .payslip-totals span:last-child {
+  background: #e2ece9;
+  color: #16463f;
+}
+
+.payroll-screen .payroll-wizard {
+  width: min(100%, 760px);
+  max-width: 760px;
+  padding: 24px;
+}
+
+.payroll-screen .payroll-wizard .toolbar {
+  margin: 12px 0;
+}
+
+.payroll-screen .payroll-wizard-actions {
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e7efec;
+}
+
+@media (max-width: 900px) {
+  .payroll-config-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Status badges ───────────────────────────────────────── */
 .status {
   display: inline-block;
@@ -710,6 +939,18 @@ td small {
 .navbar-item.active {
   background: #286052;
   color: #fff;
+}
+
+.navbar-submenu {
+  background: #173d35;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 16px 36px rgba(13, 35, 31, .35);
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.navbar-group {
+  position: relative;
 }
 
 .navbar-footer {
@@ -1179,5 +1420,28 @@ td small {
 
   .profile-grid {
     grid-template-columns: 1fr;
+  }
+
+  .payroll-screen .page-header h1 {
+    font-size: 28px;
+  }
+
+  .payroll-screen .panel-card,
+  .payroll-screen .payslip-detail-card,
+  .payroll-screen .payroll-config-form,
+  .payroll-screen .payroll-wizard {
+    padding: 20px;
+  }
+
+  .payroll-screen .payrun-overview-head {
+    flex-direction: column;
+  }
+
+  .payroll-screen .payrun-actions {
+    width: 100%;
+  }
+
+  .payroll-screen .payslip-totals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

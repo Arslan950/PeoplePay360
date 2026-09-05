@@ -16,7 +16,7 @@ export default function PayslipDetailPage() {
   if (!payslip) return <main className="app-shell"><p className="error">{error}</p></main>;
   const structure = payslip.payrun?.salaryStructure?.name || "—";
 
-  return <main className="app-shell">
+  return <main className="app-shell payroll-screen">
     <header className="page-header"><div><p className="eyebrow">Payslip / {payslip.employee?.name} / {periodLabel(payslip.period)}</p><h1>Payslip</h1><p className="muted">Detailed salary computation for one employee.</p></div><div className="page-actions"><a className="button-link" href={payslipPdfUrl(payslip._id)} target="_blank" rel="noreferrer">PRINT PAYSLIP</a><button type="button" className="secondary" onClick={() => navigate(-1)}>Back</button></div></header>
     <section className="form-card payslip-detail-card">
       <div className="detail-grid">

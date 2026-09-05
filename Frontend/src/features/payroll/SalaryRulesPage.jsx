@@ -24,7 +24,7 @@ export default function SalaryRulesPage() {
   };
   const remove = async () => { if (!selected || !window.confirm(`Delete ${selected.name}?`)) return; try { await deleteSalaryRule(selected._id); setSelected(null); setForm(blankRule); await load(); } catch (requestError) { setError(requestError.message); } };
 
-  return <main className="app-shell">
+  return <main className="app-shell payroll-screen">
     <header className="page-header"><div><p className="eyebrow">PeoplePay360 / Payroll</p><h1>Salary Rules</h1></div><div className="page-actions"><button type="button" onClick={() => { setSelected(null); setForm(blankRule); setError(""); }}>NEW</button></div></header>
     {error && <p className="error">{error}</p>}
     <div className="payroll-config-grid"><section className="table-wrap"><table><thead><tr><th>Name</th><th>Code</th><th>Category</th><th>Structure</th><th>Sequence</th></tr></thead><tbody>{rules.map((rule) => <tr key={rule._id} className={selected?._id === rule._id ? "selected-row" : "attendance-row"} onClick={() => select(rule)}><td>{rule.name}{rule.isActive === false && <small>Inactive</small>}</td><td><code>{rule.code}</code></td><td>{rule.category}</td><td>{rule.salaryStructure?.name || "—"}</td><td>{rule.sequence}</td></tr>)}{!rules.length && <tr><td colSpan="5" className="empty-state">No salary rules configured.</td></tr>}</tbody></table></section>

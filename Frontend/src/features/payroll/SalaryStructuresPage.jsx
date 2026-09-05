@@ -24,7 +24,7 @@ export default function SalaryStructuresPage() {
     try { await deleteSalaryStructure(selected._id); setSelected(null); setForm(blankStructure); await load(); } catch (requestError) { setError(requestError.message); }
   };
 
-  return <main className="app-shell">
+  return <main className="app-shell payroll-screen">
     <header className="page-header"><div><p className="eyebrow">PeoplePay360 / Payroll</p><h1>Salary Structures</h1></div><div className="page-actions"><button type="button" onClick={() => { setSelected(null); setForm(blankStructure); setError(""); }}>NEW</button></div></header>
     {error && <p className="error">{error}</p>}
     <div className="payroll-config-grid"><section className="table-wrap"><table><thead><tr><th>Name</th><th>Description</th><th>Rule count</th></tr></thead><tbody>{structures.map((structure) => <tr className={selected?._id === structure._id ? "selected-row" : "attendance-row"} key={structure._id} onClick={() => select(structure)}><td>{structure.name}{structure.isActive === false && <small>Inactive</small>}</td><td>{structure.description || "—"}</td><td>{structure.ruleCount || 0}</td></tr>)}{!structures.length && <tr><td colSpan="3" className="empty-state">No salary structures configured.</td></tr>}</tbody></table></section>

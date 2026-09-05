@@ -5,7 +5,6 @@ import LoginPage from './features/auth/LoginPage'
 import Sidebar from './common/components/Sidebar'
 import ProtectedRoute from './common/components/ProtectedRoute'
 import EmployeesPage from './features/employees/EmployeesPage'
-import DashboardPage from './features/dashboard/DashboardPage'
 import ContractsPage from './features/contracts/ContractsPage'
 import SchedulesPage from './features/schedules/SchedulesPage'
 import AttendancePage from './features/attendance/AttendancePage'
@@ -17,7 +16,7 @@ import UserProfilePage from './features/users/UserProfilePage'
 function LoginRoute() {
   const { user } = useAuth()
 
-  if (user) return <Navigate to="/dashboard" replace />
+  if (user) return <Navigate to="/payroll/dashboard" replace />
   return <LoginPage />
 }
 
@@ -35,8 +34,7 @@ function AppRoutes() {
     <Route path="/login" element={<LoginRoute />} />
     <Route element={<ProtectedRoute />}>
       <Route element={<AppLayout />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route index element={<Navigate to="/payroll/dashboard" replace />} />
         <Route path="/employees/*" element={<EmployeesPage />} />
         <Route path="/contracts" element={<ContractsPage />} />
         <Route path="/schedules/*" element={<SchedulesPage />} />

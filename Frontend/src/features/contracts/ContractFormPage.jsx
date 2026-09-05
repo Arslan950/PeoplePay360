@@ -29,7 +29,7 @@ const emptyForm = {
   wageMonthly: "",
   workingSchedule: "",
   salaryStructure: "",
-  status: "draft",
+  status: "running",
   notes: "",
 };
 
