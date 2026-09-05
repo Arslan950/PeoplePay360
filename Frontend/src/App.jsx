@@ -1,48 +1,54 @@
 import './App.css'
-import { useState } from 'react'
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from './features/auth/AuthContext'
 import LoginPage from './features/auth/LoginPage'
-import EmployeeListPage from './features/employees/EmployeeListPage'
-import EmployeeFormPage from './features/employees/EmployeeFormPage'
-import SchedulesListPage from './features/schedules/SchedulesListPage'
-import SchedulesFormPage from './features/schedules/SchedulesFormPage'
-import Navigation from './common/components/Navigation'
-import PagePlaceholder from './common/components/PagePlaceholder'
+import Sidebar from './common/components/Sidebar'
+import ProtectedRoute from './common/components/ProtectedRoute'
+import EmployeesPage from './features/employees/EmployeesPage'
+import DashboardPage from './features/dashboard/DashboardPage'
+import ContractsPage from './features/contracts/ContractsPage'
+import SchedulesPage from './features/schedules/SchedulesPage'
+import AttendancePage from './features/attendance/AttendancePage'
+import TimeoffPage from './features/timeoff/TimeoffPage'
+import PayrollPage from './features/payroll/PayrollPage'
 
-const pageTitles = {
-  dashboard: 'Dashboard',
-  contracts: 'Contracts',
-  attendance: 'Attendance',
-  timeoff: 'Time off',
-  payroll: 'Payroll',
+function LoginRoute() {
+  const { user } = useAuth()
+
+  if (user) return <Navigate to="/dashboard" replace />
+  return <LoginPage />
 }
 
-function AppContent() {
-  const { user, loading, logout } = useAuth()
-  const [editingEmployee, setEditingEmployee] = useState(undefined)
-  const [editingSchedule, setEditingSchedule] = useState(undefined)
-  const [activePage, setActivePage] = useState('dashboard')
-  if (loading) return <main className="loading">Loading...</main>
-  if (!user) return <LoginPage />
-
-  const content = editingEmployee !== undefined
-    ? <EmployeeFormPage employee={editingEmployee} onSaved={() => setEditingEmployee(undefined)} onCancel={() => setEditingEmployee(undefined)} />
-    : editingSchedule !== undefined
-      ? <SchedulesFormPage schedule={editingSchedule} onSaved={() => setEditingSchedule(undefined)} onCancel={() => setEditingSchedule(undefined)} />
-      : activePage === 'employees'
-        ? <EmployeeListPage onAdd={() => setEditingEmployee(null)} onEdit={setEditingEmployee} />
-        : activePage === 'schedules'
-          ? <SchedulesListPage onAdd={() => setEditingSchedule(null)} onEdit={setEditingSchedule} />
-          : <PagePlaceholder title={pageTitles[activePage]} />
-
+function AppLayout() {
   return <div className="app-layout">
-    <Navigation activePage={editingEmployee !== undefined ? 'employees' : editingSchedule !== undefined ? 'schedules' : activePage} onNavigate={(page) => { setEditingEmployee(undefined); setEditingSchedule(undefined); setActivePage(page) }} user={user} onLogout={logout} />
-    <section className="app-content">{content}</section>
+    <Sidebar />
+    <section className="app-content">
+      <Outlet />
+    </section>
   </div>
 }
 
+function AppRoutes() {
+  return <Routes>
+    <Route path="/login" element={<LoginRoute />} />
+    <Route element={<ProtectedRoute />}>
+      <Route element={<AppLayout />}>
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/employees/*" element={<EmployeesPage />} />
+        <Route path="/contracts" element={<ContractsPage />} />
+        <Route path="/schedules/*" element={<SchedulesPage />} />
+        <Route path="/attendance" element={<AttendancePage />} />
+        <Route path="/timeoff" element={<TimeoffPage />} />
+        <Route path="/payroll" element={<PayrollPage />} />
+      </Route>
+    </Route>
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes>
+}
+
 function App() {
-  return <AuthProvider><AppContent /></AuthProvider>
+  return <AuthProvider><AppRoutes /></AuthProvider>
 }
 
 export default App

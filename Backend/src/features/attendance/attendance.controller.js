@@ -18,9 +18,27 @@ const ensureActiveEmployee = async (employeeId) => {
 
 const getAttendance = asyncHandler(async (req, res) => {
 	const filter = {};
-	if (req.query.employee) {
+
+	if (req.user.role === "employee") {
+		if (!req.user.employee) return res.status(200).json(new ApiResponse(200, []));
+		filter.employee = req.user.employee;
+	} else if (req.query.employee) {
 		validateId(req.query.employee, "employee");
 		filter.employee = req.query.employee;
+	}
+
+	if (req.query.from || req.query.to) {
+		filter.checkIn = {};
+		if (req.query.from) {
+			const from = new Date(req.query.from);
+			if (Number.isNaN(from.getTime())) throw new ApiError(400, "Invalid from date");
+			filter.checkIn.$gte = from;
+		}
+		if (req.query.to) {
+			const to = new Date(req.query.to);
+			if (Number.isNaN(to.getTime())) throw new ApiError(400, "Invalid to date");
+			filter.checkIn.$lte = to;
+		}
 	}
 
 	const records = await Attendance.find(filter)
@@ -30,14 +48,22 @@ const getAttendance = asyncHandler(async (req, res) => {
 });
 
 const checkIn = asyncHandler(async (req, res) => {
-	const { employee, source, notes } = req.body;
-	await ensureActiveEmployee(employee);
+	const { employee, source, notes } = req.body || {};
+	const targetEmployee = req.user.role === "employee" ? req.user.employee : employee;
 
-	const openRecord = await Attendance.findOne({ employee, checkOut: null });
+	if (req.user.role === "employee") {
+		if (!req.user.employee) throw new ApiError(403, "No employee record linked to this account");
+	} else if (!targetEmployee) {
+		throw new ApiError(400, "employee is required");
+	}
+
+	await ensureActiveEmployee(targetEmployee);
+
+	const openRecord = await Attendance.findOne({ employee: targetEmployee, checkOut: null });
 	if (openRecord) throw new ApiError(409, "Employee is already checked in");
 
 	try {
-		const record = await Attendance.create({ employee, source, notes });
+		const record = await Attendance.create({ employee: targetEmployee, source, notes });
 		return res.status(201).json(new ApiResponse(201, record, "Employee checked in"));
 	} catch (error) {
 		if (error?.code === 11000) throw new ApiError(409, "Employee is already checked in");
@@ -49,6 +75,12 @@ const checkOut = asyncHandler(async (req, res) => {
 	validateId(req.params.id);
 	const record = await Attendance.findOne({ _id: req.params.id, checkOut: null });
 	if (!record) throw new ApiError(404, "Open attendance record not found");
+
+	if (req.user.role === "employee") {
+		if (!req.user.employee || record.employee.toString() !== req.user.employee.toString()) {
+			throw new ApiError(403, "You can only check yourself out");
+		}
+	}
 
 	record.checkOut = new Date();
 	record.durationMinutes = Math.max(0, Math.round((record.checkOut - record.checkIn) / 60000));

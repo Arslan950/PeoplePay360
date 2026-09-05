@@ -8,6 +8,6 @@ const router = Router();
 router.get("/", requireAuth, getAttendance);
 router.post("/check-in", requireAuth, checkIn);
 router.post("/:id/check-out", requireAuth, checkOut);
-router.put("/:id", requireAuth, requireRole("admin"), correctAttendance);
+router.put("/:id", requireAuth, requireRole("admin", "hr_manager"), correctAttendance);
 
 export default router;

@@ -5,6 +5,7 @@ const attendanceSchema = new mongoose.Schema({
 	checkIn: { type: Date, required: true, default: Date.now },
 	checkOut: { type: Date, default: null },
 	durationMinutes: { type: Number, min: 0, default: null },
+	notes: { type: String, trim: true, default: "" },
 }, { timestamps: true });
 
 attendanceSchema.index(

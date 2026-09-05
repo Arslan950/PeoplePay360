@@ -429,6 +429,10 @@ td small {
 }
 
 @media (max-width: 760px) {
+  .navbar nav {
+    overflow-x: auto;
+  }
+
   .form-shell {
     grid-template-columns: 1fr;
   }
@@ -633,25 +637,27 @@ select:focus {
 .app-layout {
   min-height: 100svh;
   display: flex;
+  flex-direction: column;
   background: #f4f8f6;
 }
 
-.navigation {
-  width: 248px;
-  flex: 0 0 248px;
+.navbar {
+  width: 100%;
+  flex: 0 0 auto;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   box-sizing: border-box;
-  padding: 24px 14px;
+  padding: 12px 24px;
   background: #173d35;
   color: #eaf5f1;
 }
 
-.navigation-brand {
+.navbar-brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 10px 28px;
   font-size: 16px;
   font-weight: 700;
 }
@@ -668,13 +674,13 @@ select:focus {
   letter-spacing: .5px;
 }
 
-.navigation nav {
-  display: grid;
+.navbar nav {
+  display: flex;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
-.navigation-item {
-  width: 100%;
+.navbar-item {
   padding: 11px 12px;
   border-radius: 8px;
   background: transparent;
@@ -682,29 +688,28 @@ select:focus {
   text-align: left;
   font-size: 14px;
   transition: background-color .2s, color .2s;
+  text-decoration: none;
 }
 
-.navigation-item:hover,
-.navigation-item.active {
+.navbar-item:hover,
+.navbar-item.active {
   background: #286052;
   color: #fff;
 }
 
-.navigation-footer {
-  margin-top: auto;
-  display: grid;
+.navbar-footer {
+  display: flex;
+  align-items: center;
   gap: 14px;
-  padding: 18px 10px 0;
-  border-top: 1px solid rgba(216, 240, 231, .16);
 }
 
-.navigation-user {
+.navbar-user {
   display: grid;
   gap: 3px;
   min-width: 0;
 }
 
-.navigation-user strong {
+.navbar-user strong {
   overflow: hidden;
   color: #f3fbf8;
   font-size: 12px;
@@ -712,21 +717,21 @@ select:focus {
   white-space: nowrap;
 }
 
-.navigation-user span {
+.navbar-user span {
   color: #9bbdb1;
   font-size: 12px;
   text-transform: capitalize;
 }
 
-.navigation-signout {
-  padding: 8px 0;
+.navbar-signout {
+  padding: 8px 12px;
   background: transparent;
   color: #c0d8d0;
   text-align: left;
   font-size: 13px;
 }
 
-.navigation-signout:hover {
+.navbar-signout:hover {
   color: #fff;
 }
 
