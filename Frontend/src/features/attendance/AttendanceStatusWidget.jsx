@@ -12,6 +12,17 @@ const formatDuration = (dateValue, now = Date.now()) => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
+const formatTodayTotal = (minutes) => {
+  const total = Math.max(0, Math.round(minutes));
+  return `${Math.floor(total / 60)}h${String(total % 60).padStart(2, "0")}`;
+};
+
+const isToday = (value) => {
+  const date = new Date(value);
+  const today = new Date();
+  return date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate();
+};
+
 export default function AttendanceStatusWidget() {
   const { user } = useAuth();
   const [records, setRecords] = useState([]);
@@ -31,7 +42,7 @@ export default function AttendanceStatusWidget() {
     }
 
     try {
-      const params = isEmployee ? {} : { employee: user.employee };
+      const params = isEmployee ? {} : { employee: user.employee?._id || user.employee };
       const data = await getAttendance(params);
       setRecords(data);
     } catch (requestError) {
@@ -54,7 +65,7 @@ export default function AttendanceStatusWidget() {
       if (openRecord) {
         await checkOut(openRecord._id);
       } else {
-        await checkIn(isEmployee ? {} : { employee: user.employee });
+        await checkIn(isEmployee ? {} : { employee: user.employee?._id || user.employee });
       }
       setShowPopup(false);
       await load();
@@ -66,6 +77,11 @@ export default function AttendanceStatusWidget() {
   if (!canShowWidget) return null;
 
   const currentStatusText = openRecord ? formatDuration(openRecord.checkIn, tick) : "Not checked in";
+  const todayTotalMinutes = records.filter((record) => isToday(record.checkIn)).reduce((total, record) => {
+    if (record.checkOut) return total + (record.durationMinutes || 0);
+    return total + Math.max(0, Math.floor((tick - new Date(record.checkIn).getTime()) / 60000));
+  }, 0);
+  const hasTodayRecords = records.some((record) => isToday(record.checkIn));
 
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -92,9 +108,11 @@ export default function AttendanceStatusWidget() {
       {showPopup && (
         <div className="modal">
           <div className="modal-card">
-            <p className="eyebrow">Attendance</p>
-            <h2>{openRecord ? "Currently checked in" : "Ready to check in"}</h2>
-            <p style={{ margin: "12px 0" }}>{openRecord ? `In session: ${formatDuration(openRecord.checkIn, tick)}` : "No active check-in found"}</p>
+            <p className="eyebrow">Welcome back</p>
+            <h2>{user.employeeName || user.email}</h2>
+            <p className="muted" style={{ margin: "12px 0" }}>{openRecord ? "Currently checked in" : "Ready to check in"}</p>
+            {openRecord && <div className="attendance-summary"><span>{new Date(openRecord.checkIn).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} — Now</span><strong>{formatDuration(openRecord.checkIn, tick).slice(0, 5)}</strong></div>}
+            {(openRecord || hasTodayRecords) && <div className="attendance-summary"><span>Today</span><strong>{formatTodayTotal(todayTotalMinutes)}</strong></div>}
             <button type="button" onClick={handleAction}>{openRecord ? "Check Out" : "Check In"}</button>
             <button type="button" className="secondary" style={{ marginTop: "12px", width: "100%" }} onClick={() => setShowPopup(false)}>Close</button>
           </div>

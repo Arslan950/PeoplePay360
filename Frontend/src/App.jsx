@@ -9,6 +9,7 @@ import DashboardPage from './features/dashboard/DashboardPage'
 import ContractsPage from './features/contracts/ContractsPage'
 import SchedulesPage from './features/schedules/SchedulesPage'
 import AttendancePage from './features/attendance/AttendancePage'
+import AttendanceDetailPage from './features/attendance/AttendanceDetailPage'
 import TimeoffPage from './features/timeoff/TimeoffPage'
 import PayrollPage from './features/payroll/PayrollPage'
 
@@ -39,6 +40,7 @@ function AppRoutes() {
         <Route path="/contracts" element={<ContractsPage />} />
         <Route path="/schedules/*" element={<SchedulesPage />} />
         <Route path="/attendance" element={<AttendancePage />} />
+        <Route path="/attendance/:id" element={<AttendanceDetailPage />} />
         <Route path="/timeoff" element={<TimeoffPage />} />
         <Route path="/payroll" element={<PayrollPage />} />
       </Route>

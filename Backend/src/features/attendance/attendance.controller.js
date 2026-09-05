@@ -9,6 +9,36 @@ const validateId = (id, label = "attendance") => {
 	if (!mongoose.isValidObjectId(id)) throw new ApiError(400, `Invalid ${label} id`);
 };
 
+const timeToMinutes = (value) => {
+	if (typeof value !== "string") return Number.NaN;
+	const match = value.match(/^(\d{1,2}):(\d{2})$/);
+	if (!match) return Number.NaN;
+	return (Number(match[1]) * 60) + Number(match[2]);
+};
+
+const attachComputedFields = (record) => {
+	const data = typeof record.toObject === "function" ? record.toObject() : record;
+	const durationMinutes = data.durationMinutes;
+	const workedHours = durationMinutes == null ? null : durationMinutes / 60;
+
+	if (durationMinutes == null) return { ...data, workedHours, overtime: null };
+
+	const weekday = new Date(data.checkIn).toLocaleDateString("en-US", { weekday: "long" });
+	const weeklyPattern = data.employee?.workingSchedule?.weeklyPattern;
+	const entry = Array.isArray(weeklyPattern)
+		? weeklyPattern.find((item) => item?.day === weekday && item.isWorkingDay)
+		: null;
+	const startMinutes = timeToMinutes(entry?.startTime);
+	const endMinutes = timeToMinutes(entry?.endTime);
+	const breakMinutes = Number(entry?.breakMinutes);
+	const expectedHours = Number.isFinite(startMinutes) && Number.isFinite(endMinutes) && Number.isFinite(breakMinutes)
+		&& endMinutes - startMinutes - breakMinutes > 0
+		? (endMinutes - startMinutes - breakMinutes) / 60
+		: 8;
+
+	return { ...data, workedHours, overtime: Number(Math.max(0, workedHours - expectedHours).toFixed(2)) };
+};
+
 const ensureActiveEmployee = async (employeeId) => {
 	validateId(employeeId, "employee");
 	const employee = await Employee.findOne({ _id: employeeId, status: "active" });
@@ -42,9 +72,30 @@ const getAttendance = asyncHandler(async (req, res) => {
 	}
 
 	const records = await Attendance.find(filter)
-		.populate("employee", "name email department jobPosition")
+		.populate({
+			path: "employee",
+			select: "name email department jobPosition manager workingSchedule",
+			populate: { path: "workingSchedule", select: "weeklyPattern weeklyHours" },
+		})
 		.sort({ checkIn: -1 });
-	return res.status(200).json(new ApiResponse(200, records));
+	return res.status(200).json(new ApiResponse(200, records.map(attachComputedFields)));
+});
+
+const getAttendanceById = asyncHandler(async (req, res) => {
+	validateId(req.params.id);
+	const record = await Attendance.findById(req.params.id).populate({
+		path: "employee",
+		select: "name email department jobPosition manager workingSchedule",
+		populate: [
+			{ path: "manager", select: "name" },
+			{ path: "workingSchedule", select: "weeklyPattern weeklyHours" },
+		],
+	});
+	if (!record) throw new ApiError(404, "Attendance record not found");
+	if (req.user.role === "employee" && (!req.user.employee || record.employee._id.toString() !== req.user.employee.toString())) {
+		throw new ApiError(403, "You can only view your own attendance");
+	}
+	return res.status(200).json(new ApiResponse(200, attachComputedFields(record)));
 });
 
 const checkIn = asyncHandler(async (req, res) => {
@@ -111,4 +162,4 @@ const correctAttendance = asyncHandler(async (req, res) => {
 	return res.status(200).json(new ApiResponse(200, record, "Attendance corrected"));
 });
 
-export { getAttendance, checkIn, checkOut, correctAttendance };
+export { getAttendance, getAttendanceById, checkIn, checkOut, correctAttendance };

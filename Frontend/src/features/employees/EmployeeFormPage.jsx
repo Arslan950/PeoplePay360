@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createEmployee, updateEmployee } from "./employeeApi";
 import { createUser, deactivateUser, reactivateUser, updateUserRole } from "../users/usersApi";
 import { useAuth } from "../auth/AuthContext";
+import SmartButtonsBar from "./components/SmartButtonsBar";
 
 const roles = ["employee", "hr_manager", "hr_payroll_user", "hr_payroll_manager", "admin"];
 
@@ -55,6 +56,7 @@ export default function EmployeeFormPage({ employee, onSaved, onCancel }) {
       <form className="form-card" onSubmit={save}>
         <p className="eyebrow">Employee record</p>
         <h1>{employee ? "Edit employee" : "Add employee"}</h1>
+        {employee && <SmartButtonsBar employeeId={employee._id} />}
         {["name", "email", "phone", "department", "jobPosition", "employeeType", "joinDate"].map((field) => (
           <label key={field}>
             {field}
