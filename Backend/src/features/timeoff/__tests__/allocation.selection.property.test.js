@@ -1,4 +1,5 @@
 import fc from 'fast-check';
+import { jest } from '@jest/globals';
 import { findSuitableAllocation } from '../timeoff.service.js';
 import { Allocation } from '../allocation.model.js';
 
@@ -108,9 +109,10 @@ describe('Allocation Selection Property Tests', () => {
 						}
 					];
 					
-					// Mock database to return sorted allocations (validTo: 1 sorts null last)
-					const mockSort = jest.fn().mockResolvedValue(allocations);
-					Allocation.find = jest.fn().mockReturnValue({ sort: mockSort });
+					// Mock the database's validTo sort order.
+					// The database query excludes insufficient balances via its $expr filter.
+					const mockSort = jest.fn().mockResolvedValue(allocations.slice(1));
+					jest.spyOn(Allocation, 'find').mockReturnValue({ sort: mockSort });
 					
 					const result = await findSuitableAllocation(mockEmployeeId, mockTimeoffTypeId, requestedDuration);
 					
@@ -214,7 +216,7 @@ describe('Allocation Selection Property Tests', () => {
 					];
 					
 					const mockSort = jest.fn().mockResolvedValue(allocations);
-					Allocation.find = jest.fn().mockReturnValue({ sort: mockSort });
+					jest.spyOn(Allocation, 'find').mockReturnValue({ sort: mockSort });
 					
 					const result = await findSuitableAllocation(mockEmployeeId, mockTimeoffTypeId, requestedDuration);
 					
