@@ -6,6 +6,7 @@ const attendanceSchema = new mongoose.Schema({
 	checkOut: { type: Date, default: null },
 	durationMinutes: { type: Number, min: 0, default: null },
 	notes: { type: String, trim: true, default: "" },
+	source: { type: String, trim: true, default: null },
 }, { timestamps: true });
 
 attendanceSchema.index(

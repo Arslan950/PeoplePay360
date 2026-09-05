@@ -1,18 +1,39 @@
-import { useState } from "react";
-import { createEmployee, updateEmployee } from "./employeeApi";
+import { useEffect, useState } from "react";
+import { createEmployee, getEmployees, updateEmployee } from "./employeeApi";
 import { createUser, deactivateUser, reactivateUser, updateUserRole } from "../users/usersApi";
 import { useAuth } from "../auth/AuthContext";
+import { getSchedules } from "../schedules/scheduleApi";
 import SmartButtonsBar from "./components/SmartButtonsBar";
 
 const roles = ["employee", "hr_manager", "hr_payroll_user", "hr_payroll_manager", "admin"];
+const emptyEmployeeForm = { name: "", email: "", phone: "", department: "", jobPosition: "", workLocation: "", manager: "", workingSchedule: "", employeeType: "", status: "active", joinDate: "" };
+
+const getEmployeeForm = (employee) => employee ? {
+  ...emptyEmployeeForm,
+  ...employee,
+  manager: employee.manager?._id || employee.manager || "",
+  workingSchedule: employee.workingSchedule?._id || employee.workingSchedule || "",
+  joinDate: employee.joinDate ? employee.joinDate.slice(0, 10) : "",
+} : emptyEmployeeForm;
 
 export default function EmployeeFormPage({ employee, onSaved, onCancel }) {
   const { user } = useAuth();
-  const [form, setForm] = useState(employee || { name: "", email: "", phone: "", department: "", jobPosition: "", employeeType: "", status: "active", joinDate: "" });
+  const [form, setForm] = useState(() => getEmployeeForm(employee));
   const [account, setAccount] = useState(employee?.user || null);
+  const [managers, setManagers] = useState([]);
+  const [schedules, setSchedules] = useState([]);
   const [temporaryPassword, setTemporaryPassword] = useState("");
   const [error, setError] = useState("");
   const isAdmin = user?.role === "admin";
+
+  useEffect(() => {
+    getEmployees()
+      .then(setManagers)
+      .catch((requestError) => setError(requestError.message));
+    getSchedules({ status: "active" })
+      .then(setSchedules)
+      .catch((requestError) => setError(requestError.message));
+  }, []);
 
   const save = async (event) => {
     event.preventDefault();
@@ -57,7 +78,7 @@ export default function EmployeeFormPage({ employee, onSaved, onCancel }) {
         <p className="eyebrow">Employee record</p>
         <h1>{employee ? "Edit employee" : "Add employee"}</h1>
         {employee && <SmartButtonsBar employeeId={employee._id} />}
-        {["name", "email", "phone", "department", "jobPosition", "employeeType", "joinDate"].map((field) => (
+        {["name", "email", "phone"].map((field) => (
           <label key={field}>
             {field}
             <input
@@ -68,6 +89,37 @@ export default function EmployeeFormPage({ employee, onSaved, onCancel }) {
             />
           </label>
         ))}
+        <section className="work-information">
+          <p className="eyebrow">Work information</p>
+          {["department", "jobPosition", "employeeType", "joinDate"].map((field) => (
+            <label key={field}>
+              {field}
+              <input
+                type={field === "joinDate" ? "date" : "text"}
+                value={form[field] || ""}
+                onChange={(event) => setForm({ ...form, [field]: event.target.value })}
+              />
+            </label>
+          ))}
+          <label>
+            Manager
+            <select value={form.manager || ""} onChange={(event) => setForm({ ...form, manager: event.target.value })}>
+              <option value="">None</option>
+              {managers.filter((manager) => manager._id !== employee?._id).map((manager) => <option key={manager._id} value={manager._id}>{manager.name}</option>)}
+            </select>
+          </label>
+          <label>
+            Working Schedule
+            <select value={form.workingSchedule || ""} onChange={(event) => setForm({ ...form, workingSchedule: event.target.value })}>
+              <option value="">None</option>
+              {schedules.map((schedule) => <option key={schedule._id} value={schedule._id}>{schedule.name}</option>)}
+            </select>
+          </label>
+          <label>
+            Work Location
+            <input type="text" value={form.workLocation || ""} onChange={(event) => setForm({ ...form, workLocation: event.target.value })} />
+          </label>
+        </section>
         <label>
           Status
           <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}>

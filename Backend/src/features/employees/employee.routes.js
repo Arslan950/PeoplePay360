@@ -16,9 +16,9 @@ const router = Router();
 router.get("/", requireAuth, getEmployees);
 router.get("/:id", requireAuth, getEmployeeById);
 router.post("/:id/credentials", requireAuth, requireRole("admin", "hr_manager"), resetEmployeeCredentials);
-router.post("/", requireAuth, requireRole("admin"), createEmployee);
-router.put("/:id", requireAuth, requireRole("admin"), updateEmployee);
-router.put("/:id/deactivate", requireAuth, requireRole("admin"), deactivateEmployee);
-router.put("/:id/reactivate", requireAuth, requireRole("admin"), reactivateEmployee);
+router.post("/", requireAuth, requireRole("admin", "hr_manager"), createEmployee);
+router.put("/:id", requireAuth, requireRole("admin", "hr_manager"), updateEmployee);
+router.put("/:id/deactivate", requireAuth, requireRole("admin", "hr_manager"), deactivateEmployee);
+router.put("/:id/reactivate", requireAuth, requireRole("admin", "hr_manager"), reactivateEmployee);
 
 export default router;
