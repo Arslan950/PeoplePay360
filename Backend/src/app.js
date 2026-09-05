@@ -5,6 +5,7 @@ import healthCheckRouter from "./routes/healthCheck.route.js";
 import authRouter from "./features/auth/auth.routes.js";
 import employeeRouter from "./features/employees/employee.routes.js";
 import userRouter from "./features/users/user.routes.js";
+import attendanceRouter from "./features/attendance/attendance.routes.js";
 import { ApiError } from "./utils/api-error.js";
 
 const app = express();
@@ -24,6 +25,7 @@ app.use("/api/healthcheck", healthCheckRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/employees", employeeRouter);
 app.use("/api/users", userRouter);
+app.use("/api/attendance", attendanceRouter);
 
 app.use((err, req, res, next) => {
     if (err instanceof ApiError) {
