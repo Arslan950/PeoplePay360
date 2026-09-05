@@ -7,7 +7,8 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
-  const [filters, setFilters] = useState({ department: "", status: "" });
+  const [filters, setFilters] = useState({ status: "" });
+  const [search, setSearch] = useState("");
   const [view, setView] = useState("list");
   const [credentials, setCredentials] = useState(null);
   const [error, setError] = useState("");
@@ -19,7 +20,15 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
 
   useEffect(() => {
     load();
-  }, [filters.department, filters.status]);
+  }, [filters.status]);
+
+  const normalizedSearch = search.trim().toLowerCase();
+  const visibleEmployees = employees.filter((employee) => {
+    if (!normalizedSearch) return true;
+    return [employee.name, employee.email, employee.department, employee.jobPosition, employee.employeeType]
+      .filter(Boolean)
+      .some((value) => value.toLowerCase().includes(normalizedSearch));
+  });
 
   const changeStatus = async (employee) => {
     try {
@@ -52,7 +61,7 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
       </header>
 
       <section className="toolbar">
-        <input placeholder="Department" value={filters.department} onChange={(event) => setFilters({ ...filters, department: event.target.value })} />
+        <input placeholder="Search name" value={search} onChange={(event) => setSearch(event.target.value)} />
         <select value={filters.status} onChange={(event) => setFilters({ ...filters, status: event.target.value })}>
           <option value="">All statuses</option>
           <option value="active">Active</option>
@@ -79,7 +88,7 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
               </tr>
             </thead>
             <tbody>
-              {employees.map((employee) => (
+              {visibleEmployees.map((employee) => (
                 <tr key={employee._id}>
                   <td>
                     {canManageEmployees ? <button className="link-button" onClick={() => onEdit(employee)}>{employee.name}</button> : employee.name}
@@ -110,7 +119,7 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
         </div>
       ) : (
         <div className="kanban-grid">
-          {employees.map((employee) => (
+          {visibleEmployees.map((employee) => (
             <article className="employee-card" key={employee._id}>
               <span className={`status ${employee.status}`}>{employee.status}</span>
               <h2>
