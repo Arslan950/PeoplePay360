@@ -152,6 +152,7 @@ const checkOut = asyncHandler(async (req, res) => {
 	}
 
 	record.checkOut = new Date();
+	record.status = "closed";
 	record.durationMinutes = Math.max(0, Math.round((record.checkOut - record.checkIn) / 60000));
 	await record.save();
 	return res.status(200).json(new ApiResponse(200, record, "Employee checked out"));
@@ -176,6 +177,7 @@ const correctAttendance = asyncHandler(async (req, res) => {
 	record.durationMinutes = record.checkOut
 		? Math.max(0, Math.round((record.checkOut - record.checkIn) / 60000))
 		: null;
+	record.status = record.checkOut ? "closed" : "open";
 	await record.save();
 	return res.status(200).json(new ApiResponse(200, record, "Attendance corrected"));
 });

@@ -1,5 +1,11 @@
 import mongoose from "mongoose";
 
+const bankDetailsSchema = new mongoose.Schema({
+	accountHolderName: { type: String, trim: true, default: "" },
+	accountNumber: { type: String, trim: true, default: "" },
+	ifsc: { type: String, trim: true, uppercase: true, default: "" },
+}, { _id: false });
+
 const employeeSchema = new mongoose.Schema({
 	name: { type: String, required: true, trim: true },
 	email: {
@@ -12,6 +18,7 @@ const employeeSchema = new mongoose.Schema({
 	},
 	phone: { type: String, trim: true },
 	department: { type: String, trim: true },
+	company: { type: String, trim: true },
 	jobPosition: { type: String, trim: true },
 	workLocation: { type: String, trim: true },
 	manager: { type: mongoose.Schema.Types.ObjectId, ref: "Employee", default: null },
@@ -19,6 +26,7 @@ const employeeSchema = new mongoose.Schema({
 	employeeType: { type: String, trim: true },
 	status: { type: String, enum: ["active", "inactive"], default: "active" },
 	joinDate: { type: Date },
+	bankDetails: { type: bankDetailsSchema, default: () => ({}) },
 	user: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
 }, { timestamps: true });
 

@@ -43,7 +43,7 @@ function AppRoutes() {
         <Route path="/attendance" element={<AttendancePage />} />
         <Route path="/attendance/:id" element={<AttendanceDetailPage />} />
         <Route path="/timeoff" element={<TimeoffPage />} />
-        <Route path="/payroll" element={<PayrollPage />} />
+        <Route path="/payroll/*" element={<PayrollPage />} />
         <Route path="/profile/:userId" element={<UserProfilePage />} />
       </Route>
     </Route>

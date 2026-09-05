@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getEmployees } from "../employees/employeeApi";
 import { getSchedules } from "../schedules/scheduleApi";
 import { createContract, updateContract } from "./contractApi";
+import { getSalaryStructures } from "../payroll/payrollApi";
 
 const emptyForm = {
   employee: "",
@@ -9,20 +10,24 @@ const emptyForm = {
   jobPosition: "",
   startDate: "",
   endDate: "",
-  wagePerMonth: "",
+  wageMonthly: "",
   workingSchedule: "",
+  salaryStructure: "",
+  status: "draft",
   notes: "",
 };
 
 export default function ContractFormPage({ contract, onSaved, onCancel, employeeScope }) {
   const [employees, setEmployees] = useState([]);
   const [schedules, setSchedules] = useState([]);
+  const [salaryStructures, setSalaryStructures] = useState([]);
   const [form, setForm] = useState(contract || { ...emptyForm, employee: employeeScope || "" });
   const [error, setError] = useState("");
 
   useEffect(() => {
     getEmployees().then(setEmployees).catch(() => undefined);
     getSchedules({ status: "active" }).then(setSchedules).catch(() => undefined);
+    getSalaryStructures().then(setSalaryStructures).catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -43,11 +48,12 @@ export default function ContractFormPage({ contract, onSaved, onCancel, employee
         ...form,
         employee: contract ? contract.employee?._id || contract.employee : form.employee,
         endDate: form.endDate || null,
-        wagePerMonth: Number(form.wagePerMonth),
+        wageMonthly: Number(form.wageMonthly),
         workingSchedule: form.workingSchedule || null,
+        salaryStructure: form.salaryStructure || null,
         notes: form.notes || "",
       };
-      if (!payload.employee || !payload.startDate || Number.isNaN(payload.wagePerMonth)) {
+      if (!payload.employee || !payload.startDate || Number.isNaN(payload.wageMonthly)) {
         throw new Error("Employee, start date, and wage are required");
       }
       const saved = contract ? await updateContract(contract._id, payload) : await createContract(payload);
@@ -90,7 +96,7 @@ export default function ContractFormPage({ contract, onSaved, onCancel, employee
           </label>
           <label>
             Wage / month
-            <input type="number" min="0" step="0.01" value={form.wagePerMonth || ""} onChange={(event) => setForm({ ...form, wagePerMonth: event.target.value })} required />
+            <input type="number" min="0" step="0.01" value={form.wageMonthly || ""} onChange={(event) => setForm({ ...form, wageMonthly: event.target.value })} required />
           </label>
           <label>
             Start date
@@ -107,8 +113,23 @@ export default function ContractFormPage({ contract, onSaved, onCancel, employee
               {schedules.map((schedule) => <option key={schedule._id} value={schedule._id}>{schedule.name}</option>)}
             </select>
           </label>
+          <label>
+            Salary structure
+            <select value={form.salaryStructure || ""} onChange={(event) => setForm({ ...form, salaryStructure: event.target.value || null })}>
+              <option value="">No structure</option>
+              {salaryStructures.filter((structure) => structure.isActive).map((structure) => <option key={structure._id} value={structure._id}>{structure.name}</option>)}
+            </select>
+          </label>
+          <label>
+            Status
+            <select value={form.status || "draft"} onChange={(event) => setForm({ ...form, status: event.target.value })}>
+              <option value="draft">Draft</option>
+              <option value="running">Running</option>
+              <option value="expired">Expired</option>
+            </select>
+          </label>
           <label className="contract-form-notes">
-            Salary Structure / Notes
+            Notes
             <textarea rows="4" value={form.notes || ""} onChange={(event) => setForm({ ...form, notes: event.target.value })} />
           </label>
         </div>

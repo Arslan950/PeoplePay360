@@ -1,18 +1,35 @@
 import { Router } from "express";
+import { requireAuth } from "../../common/middleware/auth.middleware.js";
+import { requireRole } from "../../common/middleware/role.middleware.js";
+import { listSalaryStructures, createSalaryStructure, updateSalaryStructure, deleteSalaryStructure } from "./salaryStructure.controller.js";
+import { listSalaryRules, createSalaryRule, updateSalaryRule, deleteSalaryRule } from "./salaryRule.controller.js";
+import { listPayruns, getPayrunById, createDraftPayrun, setEmployeesOnPayrun, computePayrun, validatePayrun, markPaidPayrun, deletePayrun, sendPayslips } from "./payrun.controller.js";
+import { getPayslips, getPayslipById, getPayslipPdf } from "./payslip.controller.js";
 
 const router = Router();
 
-// TODO: GET /api/salary-rules
-// TODO: POST /api/salary-rules
-// TODO: GET /api/salary-structures
-// TODO: POST /api/salary-structures
-// TODO: POST /api/payruns (wizard: scope + period + employees)
-// TODO: GET /api/payruns/:id
-// TODO: POST /api/payruns/:id/compute
-// TODO: POST /api/payruns/:id/validate
-// TODO: POST /api/payruns/:id/mark-paid
-// TODO: POST /api/payruns/:id/send-payslips
-// TODO: GET /api/payslips/:id
-// TODO: GET /api/payslips/:id/pdf
+router.get("/salary-structures", requireAuth, listSalaryStructures);
+router.post("/salary-structures", requireAuth, requireRole("hr_payroll_manager", "admin"), createSalaryStructure);
+router.put("/salary-structures/:id", requireAuth, requireRole("hr_payroll_manager", "admin"), updateSalaryStructure);
+router.delete("/salary-structures/:id", requireAuth, requireRole("hr_payroll_manager", "admin"), deleteSalaryStructure);
+
+router.get("/salary-rules", requireAuth, listSalaryRules);
+router.post("/salary-rules", requireAuth, requireRole("hr_payroll_manager", "admin"), createSalaryRule);
+router.put("/salary-rules/:id", requireAuth, requireRole("hr_payroll_manager", "admin"), updateSalaryRule);
+router.delete("/salary-rules/:id", requireAuth, requireRole("hr_payroll_manager", "admin"), deleteSalaryRule);
+
+router.post("/payruns/draft", requireAuth, requireRole("hr_payroll_user", "hr_payroll_manager", "admin"), createDraftPayrun);
+router.get("/payruns", requireAuth, listPayruns);
+router.get("/payruns/:id", requireAuth, getPayrunById);
+router.put("/payruns/:id/employees", requireAuth, requireRole("hr_payroll_user", "hr_payroll_manager", "admin"), setEmployeesOnPayrun);
+router.post("/payruns/:id/compute", requireAuth, requireRole("hr_payroll_user", "hr_payroll_manager", "admin"), computePayrun);
+router.post("/payruns/:id/validate", requireAuth, requireRole("hr_payroll_user", "hr_payroll_manager", "admin"), validatePayrun);
+router.post("/payruns/:id/mark-paid", requireAuth, requireRole("hr_payroll_manager", "admin"), markPaidPayrun);
+router.post("/payruns/:id/send-payslips", requireAuth, requireRole("hr_payroll_user", "hr_payroll_manager", "admin"), sendPayslips);
+router.delete("/payruns/:id", requireAuth, requireRole("hr_payroll_manager", "admin"), deletePayrun);
+
+router.get("/payslips", requireAuth, getPayslips);
+router.get("/payslips/:id", requireAuth, getPayslipById);
+router.get("/payslips/:id/pdf", requireAuth, getPayslipPdf);
 
 export default router;

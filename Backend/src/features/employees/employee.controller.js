@@ -7,7 +7,7 @@ import { ApiError } from "../../utils/api-error.js";
 import { ApiResponse } from "../../utils/api-response.js";
 import { asyncHandler } from "../../utils/async-handler.js";
 
-const employeeFields = ["name", "email", "phone", "department", "jobPosition", "workLocation", "manager", "workingSchedule", "employeeType", "status", "joinDate"];
+const employeeFields = ["name", "email", "phone", "department", "company", "jobPosition", "workLocation", "manager", "workingSchedule", "employeeType", "status", "joinDate", "bankDetails"];
 const pickEmployeeFields = (body) => Object.fromEntries(
     employeeFields
         .filter((field) => Object.prototype.hasOwnProperty.call(body, field))

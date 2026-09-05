@@ -1,7 +1,9 @@
 import { Router } from "express";
+import { requireAuth } from "../../common/middleware/auth.middleware.js";
+import { getDashboard } from "./dashboard.controller.js";
 
 const router = Router();
 
-// TODO: GET /api/dashboard?period=&department=&employeeType=
+router.get("/", requireAuth, getDashboard);
 
 export default router;

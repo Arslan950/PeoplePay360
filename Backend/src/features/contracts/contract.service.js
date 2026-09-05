@@ -2,14 +2,17 @@ import { Contract } from "./contract.model.js";
 import { ApiError } from "../../utils/api-error.js";
 
 const resolveStatus = (contract, asOf = new Date()) => {
-	if (contract?.endDate && new Date(contract.endDate) < new Date(asOf)) return "expired";
+	if (!contract) return "draft";
+	if (contract.status === "draft") return "draft";
+	if (contract.status === "expired" || (contract.endDate && new Date(contract.endDate) < new Date(asOf))) return "expired";
 	return "running";
 };
 
-const assertNoOverlap = async ({ employee, startDate, endDate, excludeContractId }) => {
+const assertNoOverlap = async ({ employee, startDate, endDate, excludeContractId, status = "running" }) => {
+	if (status !== "running") return;
 	const newStart = new Date(startDate);
 	const newEnd = endDate ? new Date(endDate) : null;
-	const query = { employee, _id: { $ne: excludeContractId || null } };
+	const query = { employee, status: "running", _id: { $ne: excludeContractId || null } };
 	const contracts = await Contract.find(query);
 	for (const existing of contracts) {
 		const existingStart = new Date(existing.startDate);
@@ -17,7 +20,7 @@ const assertNoOverlap = async ({ employee, startDate, endDate, excludeContractId
 		const existingStartsBeforeNewEnd = existingStart <= (newEnd || Infinity);
 		const existingEndsAfterNewStart = (existingEnd || Infinity) >= newStart;
 		if (existingStartsBeforeNewEnd && existingEndsAfterNewStart) {
-			throw new ApiError(409, "Employee already has a contract covering this period");
+			throw new ApiError(400, "Employee already has a running contract covering this period");
 		}
 	}
 };

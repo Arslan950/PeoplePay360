@@ -16,9 +16,10 @@ const contractFields = [
 	"jobPosition",
 	"startDate",
 	"endDate",
-	"wagePerMonth",
+	"wageMonthly",
 	"workingSchedule",
 	"salaryStructure",
+	"status",
 	"notes",
 ];
 
@@ -45,7 +46,7 @@ const getContracts = asyncHandler(async (req, res) => {
 	}
 
 	if (req.query.status) {
-		const allowed = ["running", "expired"];
+		const allowed = ["running", "expired", "draft"];
 		if (!allowed.includes(req.query.status)) throw new ApiError(400, "Invalid status filter");
 	}
 
@@ -75,8 +76,8 @@ const getContractById = asyncHandler(async (req, res) => {
 
 const createContract = asyncHandler(async (req, res) => {
 	const data = pickContractFields(req.body || {});
-	if (!data.employee || !data.startDate || data.wagePerMonth === undefined) {
-		throw new ApiError(400, "employee, startDate, and wagePerMonth are required");
+	if (!data.employee || !data.startDate || data.wageMonthly === undefined) {
+		throw new ApiError(400, "employee, startDate, and wageMonthly are required");
 	}
 
 	const employee = await Employee.findById(data.employee);
@@ -94,9 +95,10 @@ const createContract = asyncHandler(async (req, res) => {
 		employee: data.employee,
 		startDate,
 		endDate,
+		status: data.status || "draft",
 	});
 
-	data.contractNumber = await nextContractNumber(startDate.getFullYear());
+	data.code = await nextContractNumber(startDate.getFullYear());
 	const contract = await Contract.create(data);
 	const created = await Contract.findById(contract._id)
 		.populate("employee", "name department jobPosition")
@@ -113,8 +115,8 @@ const updateContract = asyncHandler(async (req, res) => {
 	const contract = await Contract.findById(req.params.id);
 	if (!contract) throw new ApiError(404, "Contract not found");
 
-	if (Object.prototype.hasOwnProperty.call(data, "endDate")) {
-		const nextEndDate = data.endDate ? new Date(data.endDate) : null;
+	if (Object.prototype.hasOwnProperty.call(data, "endDate") || Object.prototype.hasOwnProperty.call(data, "status")) {
+		const nextEndDate = Object.prototype.hasOwnProperty.call(data, "endDate") ? (data.endDate ? new Date(data.endDate) : null) : contract.endDate;
 		if (nextEndDate && Number.isNaN(nextEndDate.getTime())) throw new ApiError(400, "Invalid endDate");
 		if (nextEndDate && nextEndDate < new Date(contract.startDate)) {
 			throw new ApiError(400, "endDate must be after startDate");
@@ -124,6 +126,7 @@ const updateContract = asyncHandler(async (req, res) => {
 			startDate: contract.startDate,
 			endDate: nextEndDate,
 			excludeContractId: contract._id,
+			status: data.status || contract.status,
 		});
 	}
 

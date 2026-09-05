@@ -10,6 +10,7 @@ const attendanceSchema = new mongoose.Schema({
 	checkIn: { type: Date, required: true, default: Date.now },
 	date: { type: String, required: true, index: true },
 	checkOut: { type: Date, default: null },
+	status: { type: String, enum: ["open", "closed"], default: "open", index: true },
 	durationMinutes: { type: Number, min: 0, default: null },
 	notes: { type: String, trim: true, default: "" },
 	source: { type: String, trim: true, default: null },
@@ -19,6 +20,7 @@ attendanceSchema.pre("validate", function () {
 	if (this.checkIn && !Number.isNaN(new Date(this.checkIn).getTime())) {
 		this.date = getLocalDateString(this.checkIn);
 	}
+	this.status = this.checkOut ? "closed" : "open";
 });
 
 attendanceSchema.index({ employee: 1, date: 1 }, { unique: true });

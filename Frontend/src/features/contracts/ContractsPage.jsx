@@ -49,7 +49,7 @@ export default function ContractsPage() {
       <table>
         <thead>
           <tr>
-            <th>Contract #</th>
+            <th>Contract</th>
             {!scopedEmployeeId && <th>Employee</th>}
             <th>Start</th>
             <th>End</th>
@@ -61,11 +61,11 @@ export default function ContractsPage() {
         <tbody>
           {contracts.map((contract) => (
             <tr key={contract._id}>
-              <td>{canManageContracts ? <button className="link-button" onClick={() => setEditingContract(contract)}>{contract.contractNumber}</button> : contract.contractNumber}</td>
+              <td>{canManageContracts ? <button className="link-button" onClick={() => setEditingContract(contract)}>{contract.code}</button> : contract.code}</td>
               {!scopedEmployeeId && <td>{contract.employee?.name || contract.employee?._id || "-"}</td>}
               <td>{contract.startDate ? new Date(contract.startDate).toLocaleDateString() : "-"}</td>
               <td>{contract.endDate ? new Date(contract.endDate).toLocaleDateString() : "Ongoing"}</td>
-              <td>{Number(contract.wagePerMonth || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td>{Number(contract.wageMonthly || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
               <td><span className={`status ${contract.status === "running" ? "active" : "inactive"}`}>{contract.status}</span></td>
               {canManageContracts && <td><button className="link-button" onClick={() => setEditingContract(contract)}>Edit</button></td>}
             </tr>

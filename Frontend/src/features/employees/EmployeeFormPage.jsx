@@ -6,7 +6,10 @@ import { getSchedules } from "../schedules/scheduleApi";
 import SmartButtonsBar from "./components/SmartButtonsBar";
 
 const roles = ["employee", "hr_manager", "hr_payroll_user", "hr_payroll_manager", "admin"];
-const emptyEmployeeForm = { name: "", email: "", phone: "", department: "", jobPosition: "", workLocation: "", manager: "", workingSchedule: "", employeeType: "", status: "active", joinDate: "" };
+const emptyEmployeeForm = {
+  name: "", email: "", phone: "", department: "", company: "", jobPosition: "", workLocation: "", manager: "", workingSchedule: "", employeeType: "", status: "active", joinDate: "",
+  bankDetails: { accountHolderName: "", accountNumber: "", ifsc: "" },
+};
 
 const getEmployeeForm = (employee) => employee ? {
   ...emptyEmployeeForm,
@@ -14,6 +17,7 @@ const getEmployeeForm = (employee) => employee ? {
   manager: employee.manager?._id || employee.manager || "",
   workingSchedule: employee.workingSchedule?._id || employee.workingSchedule || "",
   joinDate: employee.joinDate ? employee.joinDate.slice(0, 10) : "",
+  bankDetails: { ...emptyEmployeeForm.bankDetails, ...(employee.bankDetails || {}) },
 } : emptyEmployeeForm;
 
 export default function EmployeeFormPage({ employee, onSaved, onCancel }) {
@@ -102,7 +106,7 @@ export default function EmployeeFormPage({ employee, onSaved, onCancel }) {
         <section className="work-information">
           <p className="eyebrow">Work information</p>
           <div className="employee-form-grid">
-            {["department", "jobPosition", "employeeType", "joinDate"].map((field) => (
+            {["department", "company", "jobPosition", "employeeType", "joinDate"].map((field) => (
               <label key={field}>
                 {field}
                 <input
@@ -141,6 +145,21 @@ export default function EmployeeFormPage({ employee, onSaved, onCancel }) {
             </select>
           </label>
         </div>
+        <section className="work-information">
+          <p className="eyebrow">Bank details</p>
+          <p className="muted">Optional, but required before a payslip can be paid without a warning.</p>
+          <div className="employee-form-grid">
+            {[['accountHolderName', 'Account holder name'], ['accountNumber', 'Account number'], ['ifsc', 'IFSC']].map(([field, label]) => (
+              <label key={field}>
+                {label}
+                <input
+                  value={form.bankDetails?.[field] || ""}
+                  onChange={(event) => setForm({ ...form, bankDetails: { ...form.bankDetails, [field]: event.target.value } })}
+                />
+              </label>
+            ))}
+          </div>
+        </section>
         {error && <p className="error">{error}</p>}
         <footer className="contract-form-actions">
           <button className="secondary" type="button" onClick={onCancel}>Cancel</button>
