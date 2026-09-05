@@ -60,53 +60,63 @@ export default function ContractFormPage({ contract, onSaved, onCancel, employee
   return (
     <main className="form-shell">
       <button type="button" className="form-close" aria-label="Close form" onClick={onCancel}>x</button>
-      <form className="form-card" onSubmit={save}>
-        <p className="eyebrow">Contract</p>
-        <h1>{contract ? "Edit contract" : "New contract"}</h1>
-        <label>
-          Employee
-          <select
-            value={form.employee}
-            onChange={(event) => setForm({ ...form, employee: event.target.value })}
-            disabled={Boolean(contract || employeeScope)}
-          >
-            <option value="">Select employee</option>
-            {employees.map((employee) => <option key={employee._id} value={employee._id}>{employee.name}</option>)}
-          </select>
-        </label>
-        <label>
-          Department
-          <input value={form.department || ""} onChange={(event) => setForm({ ...form, department: event.target.value })} />
-        </label>
-        <label>
-          Job Position
-          <input value={form.jobPosition || ""} onChange={(event) => setForm({ ...form, jobPosition: event.target.value })} />
-        </label>
-        <label>
-          Start date
-          <input type="date" value={form.startDate || ""} onChange={(event) => setForm({ ...form, startDate: event.target.value })} required />
-        </label>
-        <label>
-          End date
-          <input type="date" value={form.endDate || ""} onChange={(event) => setForm({ ...form, endDate: event.target.value })} />
-        </label>
-        <label>
-          Wage / month
-          <input type="number" min="0" step="0.01" value={form.wagePerMonth || ""} onChange={(event) => setForm({ ...form, wagePerMonth: event.target.value })} required />
-        </label>
-        <label>
-          Working schedule
-          <select value={form.workingSchedule || ""} onChange={(event) => setForm({ ...form, workingSchedule: event.target.value || "" })}>
-            <option value="">No schedule</option>
-            {schedules.map((schedule) => <option key={schedule._id} value={schedule._id}>{schedule.name}</option>)}
-          </select>
-        </label>
-        <label>
-          Salary Structure / Notes
-          <textarea rows="4" value={form.notes || ""} onChange={(event) => setForm({ ...form, notes: event.target.value })} />
-        </label>
+      <form className="form-card contract-form" onSubmit={save}>
+        <header className="contract-form-header">
+          <div>
+            <p className="eyebrow">Contract</p>
+            <h1>{contract ? "Edit contract" : "New contract"}</h1>
+            <p className="muted">Set the employee's role, dates, pay, and working schedule.</p>
+          </div>
+        </header>
+        <div className="contract-form-grid">
+          <label>
+            Employee
+            <select
+              value={form.employee}
+              onChange={(event) => setForm({ ...form, employee: event.target.value })}
+              disabled={Boolean(contract || employeeScope)}
+            >
+              <option value="">Select employee</option>
+              {employees.map((employee) => <option key={employee._id} value={employee._id}>{employee.name}</option>)}
+            </select>
+          </label>
+          <label>
+            Department
+            <input value={form.department || ""} onChange={(event) => setForm({ ...form, department: event.target.value })} />
+          </label>
+          <label>
+            Job Position
+            <input value={form.jobPosition || ""} onChange={(event) => setForm({ ...form, jobPosition: event.target.value })} />
+          </label>
+          <label>
+            Wage / month
+            <input type="number" min="0" step="0.01" value={form.wagePerMonth || ""} onChange={(event) => setForm({ ...form, wagePerMonth: event.target.value })} required />
+          </label>
+          <label>
+            Start date
+            <input type="date" value={form.startDate || ""} onChange={(event) => setForm({ ...form, startDate: event.target.value })} required />
+          </label>
+          <label>
+            End date
+            <input type="date" value={form.endDate || ""} onChange={(event) => setForm({ ...form, endDate: event.target.value })} />
+          </label>
+          <label>
+            Working schedule
+            <select value={form.workingSchedule || ""} onChange={(event) => setForm({ ...form, workingSchedule: event.target.value || "" })}>
+              <option value="">No schedule</option>
+              {schedules.map((schedule) => <option key={schedule._id} value={schedule._id}>{schedule.name}</option>)}
+            </select>
+          </label>
+          <label className="contract-form-notes">
+            Salary Structure / Notes
+            <textarea rows="4" value={form.notes || ""} onChange={(event) => setForm({ ...form, notes: event.target.value })} />
+          </label>
+        </div>
         {error && <p className="error">{error}</p>}
-        <button type="submit">{contract ? "Save contract" : "Create contract"}</button>
+        <footer className="contract-form-actions">
+          <button className="secondary" type="button" onClick={onCancel}>Cancel</button>
+          <button type="submit">{contract ? "Save contract" : "Create contract"}</button>
+        </footer>
       </form>
     </main>
   );

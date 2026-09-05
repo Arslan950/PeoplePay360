@@ -74,61 +74,78 @@ export default function EmployeeFormPage({ employee, onSaved, onCancel }) {
   return (
     <main className="form-shell">
       <button type="button" className="form-close" aria-label="Close form" onClick={onCancel}>x</button>
-      <form className="form-card" onSubmit={save}>
-        <p className="eyebrow">Employee record</p>
-        <h1>{employee ? "Edit employee" : "Add employee"}</h1>
+      <form className="form-card employee-form" onSubmit={save}>
+        <header className="contract-form-header">
+          <div>
+            <p className="eyebrow">Employee record</p>
+            <h1>{employee ? "Edit employee" : "Add employee"}</h1>
+            <p className="muted">Keep personal and work information in one clear record.</p>
+          </div>
+        </header>
         {employee && <SmartButtonsBar employeeId={employee._id} />}
-        {["name", "email", "phone"].map((field) => (
-          <label key={field}>
-            {field}
-            <input
-              type={field === "joinDate" ? "date" : field === "email" ? "email" : "text"}
-              value={form[field] || ""}
-              onChange={(event) => setForm({ ...form, [field]: event.target.value })}
-              required={field === "name" || field === "email"}
-            />
-          </label>
-        ))}
+        <section className="employee-form-section">
+          <p className="eyebrow">Personal information</p>
+          <div className="employee-form-grid">
+            {["name", "email", "phone"].map((field) => (
+              <label key={field}>
+                {field}
+                <input
+                  type={field === "email" ? "email" : "text"}
+                  value={form[field] || ""}
+                  onChange={(event) => setForm({ ...form, [field]: event.target.value })}
+                  required={field === "name" || field === "email"}
+                />
+              </label>
+            ))}
+          </div>
+        </section>
         <section className="work-information">
           <p className="eyebrow">Work information</p>
-          {["department", "jobPosition", "employeeType", "joinDate"].map((field) => (
-            <label key={field}>
-              {field}
-              <input
-                type={field === "joinDate" ? "date" : "text"}
-                value={form[field] || ""}
-                onChange={(event) => setForm({ ...form, [field]: event.target.value })}
-              />
+          <div className="employee-form-grid">
+            {["department", "jobPosition", "employeeType", "joinDate"].map((field) => (
+              <label key={field}>
+                {field}
+                <input
+                  type={field === "joinDate" ? "date" : "text"}
+                  value={form[field] || ""}
+                  onChange={(event) => setForm({ ...form, [field]: event.target.value })}
+                />
+              </label>
+            ))}
+            <label>
+              Manager
+              <select value={form.manager || ""} onChange={(event) => setForm({ ...form, manager: event.target.value })}>
+                <option value="">None</option>
+                {managers.filter((manager) => manager._id !== employee?._id).map((manager) => <option key={manager._id} value={manager._id}>{manager.name}</option>)}
+              </select>
             </label>
-          ))}
-          <label>
-            Manager
-            <select value={form.manager || ""} onChange={(event) => setForm({ ...form, manager: event.target.value })}>
-              <option value="">None</option>
-              {managers.filter((manager) => manager._id !== employee?._id).map((manager) => <option key={manager._id} value={manager._id}>{manager.name}</option>)}
-            </select>
-          </label>
-          <label>
-            Working Schedule
-            <select value={form.workingSchedule || ""} onChange={(event) => setForm({ ...form, workingSchedule: event.target.value })}>
-              <option value="">None</option>
-              {schedules.map((schedule) => <option key={schedule._id} value={schedule._id}>{schedule.name}</option>)}
-            </select>
-          </label>
-          <label>
-            Work Location
-            <input type="text" value={form.workLocation || ""} onChange={(event) => setForm({ ...form, workLocation: event.target.value })} />
-          </label>
+            <label>
+              Working Schedule
+              <select value={form.workingSchedule || ""} onChange={(event) => setForm({ ...form, workingSchedule: event.target.value })}>
+                <option value="">None</option>
+                {schedules.map((schedule) => <option key={schedule._id} value={schedule._id}>{schedule.name}</option>)}
+              </select>
+            </label>
+            <label>
+              Work Location
+              <input type="text" value={form.workLocation || ""} onChange={(event) => setForm({ ...form, workLocation: event.target.value })} />
+            </label>
+          </div>
         </section>
-        <label>
-          Status
-          <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </label>
+        <div className="employee-status-field">
+          <label>
+            Status
+            <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </label>
+        </div>
         {error && <p className="error">{error}</p>}
-        <button type="submit">Save employee</button>
+        <footer className="contract-form-actions">
+          <button className="secondary" type="button" onClick={onCancel}>Cancel</button>
+          <button type="submit">Save employee</button>
+        </footer>
       </form>
 
       {isAdmin && employee && (

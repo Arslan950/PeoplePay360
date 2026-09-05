@@ -74,58 +74,60 @@ export default function SchedulesFormPage({ schedule, onSaved, onCancel }) {
   return (
     <main className="form-shell">
       <button type="button" className="form-close" aria-label="Close form" onClick={onCancel}>x</button>
-      <form className="form-card" onSubmit={save}>
-        <p className="eyebrow">Working schedule</p>
-        <h1>{schedule ? "Edit schedule" : "Add schedule"}</h1>
-        <label>
-          Name
-          <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required />
-        </label>
-        <label>
-          Calendar type
-          <select value={form.calendarType || "fixed"} onChange={(event) => setForm({ ...form, calendarType: event.target.value })}>
-            <option value="fixed">Fixed</option>
-            <option value="flexible">Flexible</option>
-          </select>
-        </label>
-        <label>
-          Timezone
-          <input value={form.timezone || ""} onChange={(event) => setForm({ ...form, timezone: event.target.value })} />
-        </label>
-
-        <div> 
-          <p className="eyebrow" style={{ marginTop: "24px" }}>Weekly pattern</p>
-          <p className="muted">Weekly hours: {weeklyHours.toFixed(2)}h</p>
+      <form className="form-card schedule-form" onSubmit={save}>
+        <header className="contract-form-header">
+          <div>
+            <p className="eyebrow">Working schedule</p>
+            <h1>{schedule ? "Edit schedule" : "Add schedule"}</h1>
+            <p className="muted">Define the weekly working pattern and expected hours.</p>
+          </div>
+        </header>
+        <div className="schedule-form-grid">
+          <label>
+            Name
+            <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required />
+          </label>
+          <label>
+            Calendar type
+            <select value={form.calendarType || "fixed"} onChange={(event) => setForm({ ...form, calendarType: event.target.value })}>
+              <option value="fixed">Fixed</option>
+              <option value="flexible">Flexible</option>
+            </select>
+          </label>
+          <label>
+            Timezone
+            <input value={form.timezone || ""} onChange={(event) => setForm({ ...form, timezone: event.target.value })} />
+          </label>
         </div>
-
-        {days.map((day, index) => (
-          <div key={day} style={{ display: "grid", gridTemplateColumns: "120px 120px 120px 100px", gap: "8px", alignItems: "center", marginTop: "12px" }}>
-            <label style={{ margin: 0 }}>
-              <span>{day}</span>
+        <section className="schedule-pattern">
+          <div className="schedule-pattern-header">
+            <div>
+              <p className="eyebrow">Weekly pattern</p>
+              <p className="muted">Choose working days and set start, end, and break times.</p>
+            </div>
+            <strong>{weeklyHours.toFixed(2)}h / week</strong>
+          </div>
+          <div className="schedule-days-header"><span>Day</span><span>Working</span><span>Start</span><span>End</span><span>Break</span></div>
+          {days.map((day, index) => (
+            <div className="schedule-day" key={day}>
+              <strong>{day}</strong>
               <input
                 type="checkbox"
                 checked={!!form.weeklyPattern[index]?.isWorkingDay}
                 onChange={(event) => updatePattern(index, "isWorkingDay", event.target.checked)}
-                style={{ minHeight: "18px" }}
+                aria-label={`${day} is a working day`}
               />
-            </label>
-            <label style={{ margin: 0 }}>
-              <span>Start</span>
-              <input type="time" value={form.weeklyPattern[index]?.startTime || "09:00"} onChange={(event) => updatePattern(index, "startTime", event.target.value)} />
-            </label>
-            <label style={{ margin: 0 }}>
-              <span>End</span>
-              <input type="time" value={form.weeklyPattern[index]?.endTime || "17:00"} onChange={(event) => updatePattern(index, "endTime", event.target.value)} />
-            </label>
-            <label style={{ margin: 0 }}>
-              <span>Break</span>
-              <input type="number" min="0" value={form.weeklyPattern[index]?.breakMinutes || 0} onChange={(event) => updatePattern(index, "breakMinutes", Number(event.target.value) || 0)} />
-            </label>
-          </div>
-        ))}
-
+              <input aria-label={`${day} start time`} type="time" value={form.weeklyPattern[index]?.startTime || "09:00"} onChange={(event) => updatePattern(index, "startTime", event.target.value)} />
+              <input aria-label={`${day} end time`} type="time" value={form.weeklyPattern[index]?.endTime || "17:00"} onChange={(event) => updatePattern(index, "endTime", event.target.value)} />
+              <input aria-label={`${day} break minutes`} type="number" min="0" value={form.weeklyPattern[index]?.breakMinutes || 0} onChange={(event) => updatePattern(index, "breakMinutes", Number(event.target.value) || 0)} />
+            </div>
+          ))}
+        </section>
         {error && <p className="error">{error}</p>}
-        <button type="submit">Save schedule</button>
+        <footer className="contract-form-actions">
+          <button className="secondary" type="button" onClick={onCancel}>Cancel</button>
+          <button type="submit">Save schedule</button>
+        </footer>
       </form>
     </main>
   );
