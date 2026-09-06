@@ -14,6 +14,7 @@ const attendanceSchema = new mongoose.Schema({
 	durationMinutes: { type: Number, min: 0, default: null },
 	notes: { type: String, trim: true, default: "" },
 	source: { type: String, trim: true, default: null },
+	wasCorrected: { type: Boolean, default: false },
 }, { timestamps: true });
 
 attendanceSchema.pre("validate", function () {

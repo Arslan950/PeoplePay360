@@ -3,7 +3,8 @@ import { Request as TimeoffRequest } from "../timeoff/request.model.js";
 import "../timeoff/timeoffType.model.js";
 
 const DAY_MS = 86400000;
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const SHORT_WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const startOfDay = (value) => {
 	const date = new Date(value);
@@ -16,23 +17,36 @@ const toAttendanceDate = (value) => {
 	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 };
 
-const countExpectedWorkingDays = (period, schedule) => {
+const getScheduleEntryForDate = (schedule, value) => {
+	const schedulePattern = Array.isArray(schedule?.weeklyPattern) ? schedule.weeklyPattern : null;
+	if (!schedulePattern) return null;
+
+	const date = new Date(value);
+	const weekday = WEEKDAYS[date.getDay()];
+	const shortWeekday = SHORT_WEEKDAYS[date.getDay()];
+	return schedulePattern.find((entry) => entry?.day === weekday || entry?.day === shortWeekday) || null;
+};
+
+// Keep the working-day iteration in one place so payroll and dashboard coverage
+// always use the same schedule semantics (including the weekday fallback).
+const getExpectedWorkingDates = (period, schedule) => {
 	const startDate = startOfDay(period.startDate);
 	const endDate = startOfDay(period.endDate);
 	const schedulePattern = Array.isArray(schedule?.weeklyPattern) ? schedule.weeklyPattern : null;
-	let expectedWorkingDays = 0;
+	const expectedDates = [];
 
 	for (const date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
-		const weekday = WEEKDAYS[date.getDay()];
-		const scheduleEntry = schedulePattern?.find((entry) => entry?.day === weekday);
+		const scheduleEntry = getScheduleEntryForDate(schedule, date);
 		const isWorkingDay = schedulePattern
 			? scheduleEntry?.isWorkingDay === true
 			: date.getDay() >= 1 && date.getDay() <= 5;
-		if (isWorkingDay) expectedWorkingDays += 1;
+		if (isWorkingDay) expectedDates.push(toAttendanceDate(date));
 	}
 
-	return expectedWorkingDays;
+	return expectedDates;
 };
+
+const countExpectedWorkingDays = (period, schedule) => getExpectedWorkingDates(period, schedule).length;
 
 const overlapDays = (request, period) => {
 	const overlapStart = Math.max(startOfDay(request.startDate).getTime(), startOfDay(period.startDate).getTime());
@@ -70,4 +84,4 @@ const resolveWorkforceMetrics = async (employee, contract, period) => {
 	return { expectedWorkingDays, scheduleApplied, workedDays, paidLeaveDays, unpaidLeaveDays };
 };
 
-export { resolveWorkforceMetrics };
+export { resolveWorkforceMetrics, countExpectedWorkingDays, getExpectedWorkingDates, getScheduleEntryForDate, overlapDays };

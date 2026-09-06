@@ -27,9 +27,10 @@ const attachComputedFields = (record) => {
 	const workedHours = durationMinutes == null ? null : durationMinutes / 60;
 
 	const weekday = new Date(data.checkIn).toLocaleDateString("en-US", { weekday: "long" });
+	const shortWeekday = weekday.slice(0, 3);
 	const weeklyPattern = data.employee?.workingSchedule?.weeklyPattern;
 	const entry = Array.isArray(weeklyPattern)
-		? weeklyPattern.find((item) => item?.day === weekday && item.isWorkingDay)
+		? weeklyPattern.find((item) => (item?.day === weekday || item?.day === shortWeekday) && item.isWorkingDay)
 		: null;
 	if (!entry) return { ...data, workedHours, overtime: null, scheduleApplied: false };
 
@@ -178,8 +179,9 @@ const correctAttendance = asyncHandler(async (req, res) => {
 		? Math.max(0, Math.round((record.checkOut - record.checkIn) / 60000))
 		: null;
 	record.status = record.checkOut ? "closed" : "open";
+	record.wasCorrected = true;
 	await record.save();
 	return res.status(200).json(new ApiResponse(200, record, "Attendance corrected"));
 });
 
-export { getAttendance, getAttendanceById, checkIn, checkOut, correctAttendance };
+export { attachComputedFields, getAttendance, getAttendanceById, checkIn, checkOut, correctAttendance };
