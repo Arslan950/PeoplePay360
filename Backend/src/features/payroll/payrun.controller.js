@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import { Employee } from "../employees/employee.model.js";
 import { Contract } from "../contracts/contract.model.js";
 import { SalaryStructure } from "./salaryStructure.model.js";
-import { Attendance } from "../attendance/attendance.model.js";
 import { Payrun } from "./payrun.model.js";
 import { Payslip } from "./payslip.model.js";
 import { computePayslip } from "./ruleEngine.service.js";
+import { resolveWorkforceMetrics } from "./payrollAttendance.service.js";
 import { ApiError } from "../../utils/api-error.js";
 import { ApiResponse } from "../../utils/api-response.js";
 import { asyncHandler } from "../../utils/async-handler.js";
@@ -16,11 +16,6 @@ const validateObjectId = (id, label = "id") => {
 	if (!mongoose.isValidObjectId(id)) throw new ApiError(400, `Invalid ${label} id`);
 };
 
-const toAttendanceDate = (value) => {
-	const date = new Date(value);
-	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-};
-
 const validPeriod = (period) => {
 	if (!period?.startDate || !period?.endDate) throw new ApiError(400, "A start and end date are required");
 	const startDate = new Date(period.startDate);
@@ -28,6 +23,9 @@ const validPeriod = (period) => {
 	if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime()) || endDate < startDate) {
 		throw new ApiError(400, "Provide a valid payrun period");
 	}
+	const periodDays = Math.floor((endDate - startDate) / 86400000) + 1;
+	if (periodDays > 31) throw new ApiError(400, "Payrun periods cannot exceed 31 days");
+	if (endDate > new Date()) throw new ApiError(400, "Payrun period cannot end in the future");
 	return { startDate, endDate };
 };
 
@@ -52,10 +50,12 @@ const findRunningContract = (employeeId, period) => Contract.findOne({
 	status: "running",
 	startDate: { $lte: new Date(period.endDate) },
 	$or: [{ endDate: null }, { endDate: { $gte: new Date(period.startDate) } }],
-}).populate("workingSchedule", "name weeklyHours").sort({ startDate: -1 });
+}).populate("workingSchedule", "name weeklyHours weeklyPattern").sort({ startDate: -1 });
 
 const buildEligibleEmployeeList = async (period) => {
-	const employees = await Employee.find({ status: "active" }).sort({ name: 1 });
+	const employees = await Employee.find({ status: "active" })
+		.populate("workingSchedule", "name weeklyHours weeklyPattern")
+		.sort({ name: 1 });
 	const eligible = [];
 	for (const employee of employees) {
 		const contract = await findRunningContract(employee._id, period);
@@ -65,7 +65,9 @@ const buildEligibleEmployeeList = async (period) => {
 			name: employee.name,
 			department: employee.department,
 			contract: contract._id,
-			workingHours: contract.workingSchedule?.weeklyHours ? `${contract.workingSchedule.weeklyHours} hrs/week` : (contract.workingSchedule?.name || "Not assigned"),
+			workingHours: (contract.workingSchedule || employee.workingSchedule)?.weeklyHours
+				? `${(contract.workingSchedule || employee.workingSchedule).weeklyHours} hrs/week`
+				: ((contract.workingSchedule || employee.workingSchedule)?.name || "Not assigned"),
 			startDate: contract.startDate,
 			wage: Number(contract.wageMonthly || 0),
 		});
@@ -136,11 +138,10 @@ const computePayrun = asyncHandler(async (req, res) => {
 	const structureWithRules = payrun.salaryStructure;
 	const skipped = [];
 	const payslips = [];
-	const from = toAttendanceDate(payrun.period.startDate);
-	const to = toAttendanceDate(payrun.period.endDate);
 
 	for (const employeeId of payrun.employees) {
-		const employee = await Employee.findById(employeeId);
+		const employee = await Employee.findById(employeeId)
+			.populate("workingSchedule", "name weeklyHours weeklyPattern");
 		if (!employee) {
 			skipped.push({ employeeId, reason: "Employee not found" });
 			continue;
@@ -150,13 +151,13 @@ const computePayrun = asyncHandler(async (req, res) => {
 			skipped.push({ employeeId: employee._id, employee: employee.name, reason: "No running contract for this period" });
 			continue;
 		}
-		const workedDays = await Attendance.countDocuments({ employee: employee._id, date: { $gte: from, $lte: to }, status: "closed" });
-		const computation = computePayslip(contract, structureWithRules, workedDays);
+		const metrics = await resolveWorkforceMetrics(employee, contract, payrun.period);
+		const computation = computePayslip(contract, structureWithRules, metrics);
 		const existingPayslip = await Payslip.findOne({ payrun: payrun._id, employee: employee._id });
 		const warning = existingPayslip ? "Duplicate" : (!employee.bankDetails?.accountNumber ? "A/C missing" : null);
 		const payload = {
 			payrun: payrun._id, employee: employee._id, contract: contract._id, period: payrun.period,
-			lines: computation.lines, workedDays, warning,
+			lines: computation.lines, ...metrics, warning,
 			basicSalary: computation.basicSalary, grossSalary: computation.grossSalary,
 			totalDeductions: computation.totalDeductions, netSalary: computation.netSalary, status: "computed",
 		};

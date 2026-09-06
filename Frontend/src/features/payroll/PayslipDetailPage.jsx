@@ -26,6 +26,9 @@ export default function PayslipDetailPage() {
         <div className="detail-field"><span>Period</span><strong>{periodLabel(payslip.period)}</strong></div>
         <div className="detail-field"><span>Status</span><strong><span className={`status ${badgeClass(payslip.status)}`}>{payslip.status}</span></strong></div>
         <div className="detail-field"><span>Worked Days</span><strong>{payslip.workedDays}</strong></div>
+        <div className="detail-field"><span>{payslip.scheduleApplied === false ? "Expected Working Days (est.)" : "Expected Working Days"}</span><strong>{payslip.expectedWorkingDays ?? "—"}</strong></div>
+        <div className="detail-field"><span>Paid Leave Days</span><strong>{payslip.paidLeaveDays ?? 0}</strong></div>
+        <div className="detail-field"><span>Unpaid Leave Days</span><strong>{payslip.unpaidLeaveDays ?? 0}</strong></div>
       </div>
       {payslip.warning && <p className="payroll-warning inline-warning">Warning: {payslip.warning}</p>}
       <h2>Salary Computation</h2>

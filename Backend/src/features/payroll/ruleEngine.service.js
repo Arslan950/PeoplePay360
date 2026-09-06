@@ -7,7 +7,7 @@ const toNumber = (value) => {
 	return Number.isFinite(numeric) ? numeric : 0;
 };
 
-const computePayslip = (contract, salaryStructure, workedDays = 0) => {
+const computePayslip = (contract, salaryStructure, metrics = {}) => {
 	if (!contract) {
 		throw new Error("Contract is required to compute a payslip");
 	}
@@ -15,9 +15,13 @@ const computePayslip = (contract, salaryStructure, workedDays = 0) => {
 		throw new Error("Salary structure requires a mathematical formula");
 	}
 
+	const { workedDays = 0, expectedWorkingDays = 0, paidLeaveDays = 0, unpaidLeaveDays = 0 } = metrics;
 	const scope = {
 		contractWage: toNumber(contract.wageMonthly),
 		workedDays: toNumber(workedDays),
+		expectedWorkingDays: toNumber(expectedWorkingDays),
+		paidLeaveDays: toNumber(paidLeaveDays),
+		unpaidLeaveDays: toNumber(unpaidLeaveDays),
 	};
 
 	try {
@@ -32,7 +36,7 @@ const computePayslip = (contract, salaryStructure, workedDays = 0) => {
 	const totalDeductions = toNumber(scope.DEDUCTIONS) || (grossSalary - netSalary);
 
 	const lines = Object.entries(scope)
-		.filter(([key]) => !["contractWage", "workedDays"].includes(key))
+		.filter(([key]) => !["contractWage", "workedDays", "expectedWorkingDays", "paidLeaveDays", "unpaidLeaveDays"].includes(key))
 		.map(([key, value]) => {
 			const amount = toNumber(value);
 			let category = "allowance";

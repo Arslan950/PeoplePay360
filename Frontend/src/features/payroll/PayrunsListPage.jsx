@@ -7,10 +7,16 @@ const payrunName = (startDate) => startDate
   ? new Intl.DateTimeFormat(undefined, { month: "long", year: "numeric" }).format(new Date(`${startDate}T00:00:00`))
   : "";
 const badgeClass = (status) => ({ paid: "active", validated: "approved", computed: "pending", draft: "closed" }[status] || "closed");
+const currentMonthPeriod = () => {
+  const today = new Date();
+  const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  const format = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  return { startDate: format(start), endDate: format(today) };
+};
 
 function PayrunWizard({ structures, onClose, onCreated }) {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ salaryStructureId: "", startDate: "", endDate: "" });
+  const [form, setForm] = useState({ salaryStructureId: "", ...currentMonthPeriod() });
   const [draft, setDraft] = useState(null);
   const [eligible, setEligible] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
