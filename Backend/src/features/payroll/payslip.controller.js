@@ -40,7 +40,8 @@ const getPayslipPdf = asyncHandler(async (req, res) => {
 	validateObjectId(req.params.id, "payslip");
 	const payslip = await Payslip.findById(req.params.id)
 		.populate("employee", "name email")
-		.populate("contract", "wageMonthly");
+		.populate("contract", "code wageMonthly")
+		.populate("payrun", "name");
 	if (!payslip) throw new ApiError(404, "Payslip not found");
 	if (req.user.role === "employee" && req.user.employee?.toString() !== payslip.employee?._id?.toString()) {
 		throw new ApiError(403, "You can only access your own payslip PDF");
@@ -51,7 +52,13 @@ const getPayslipPdf = asyncHandler(async (req, res) => {
 		period: payslip.period,
 		contractWage: payslip.contract?.wageMonthly || 0,
 		lines: payslip.lines,
+		grossSalary: payslip.grossSalary,
+		totalDeductions: payslip.totalDeductions,
 		netSalary: payslip.netSalary,
+		workedDays: payslip.workedDays,
+		expectedWorkingDays: payslip.expectedWorkingDays,
+		payrunName: payslip.payrun?.name,
+		contractCode: payslip.contract?.code,
 	});
 	payslip.pdfGeneratedAt = new Date();
 	await payslip.save();

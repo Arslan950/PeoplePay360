@@ -213,13 +213,25 @@ const sendPayslips = asyncHandler(async (req, res) => {
 	const payrun = await Payrun.findById(req.params.id);
 	if (!payrun) throw new ApiError(404, "Payrun not found");
 	if (!['validated', 'paid'].includes(payrun.status)) throw new ApiError(400, "Validate the payrun before sending payslips");
-	const payslips = await Payslip.find({ payrun: payrun._id }).populate("employee", "name email").populate("contract", "wageMonthly");
+	const payslips = await Payslip.find({ payrun: payrun._id }).populate("employee", "name email").populate("contract", "code wageMonthly");
 	const sent = [];
 	const failed = [];
 	for (let index = 0; index < payslips.length; index += 5) {
 		const results = await Promise.allSettled(payslips.slice(index, index + 5).map(async (payslip) => {
 			if (!payslip.employee?.email) throw new Error(`${payslip.employee?.name || "Employee"} has no email address`);
-			const pdfBuffer = await generatePayslipPdfBuffer({ employee: payslip.employee, period: payslip.period, contractWage: payslip.contract?.wageMonthly, lines: payslip.lines, netSalary: payslip.netSalary });
+			const pdfBuffer = await generatePayslipPdfBuffer({
+				employee: payslip.employee,
+				period: payslip.period,
+				contractWage: payslip.contract?.wageMonthly,
+				lines: payslip.lines,
+				grossSalary: payslip.grossSalary,
+				totalDeductions: payslip.totalDeductions,
+				netSalary: payslip.netSalary,
+				workedDays: payslip.workedDays,
+				expectedWorkingDays: payslip.expectedWorkingDays,
+				payrunName: payrun.name,
+				contractCode: payslip.contract?.code,
+			});
 			await sendPayslipEmail({ employeeName: payslip.employee.name, employeeEmail: payslip.employee.email, period: payslip.period, pdfBuffer });
 			payslip.emailSentAt = new Date();
 			await payslip.save();
