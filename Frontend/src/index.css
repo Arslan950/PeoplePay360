@@ -1638,6 +1638,214 @@ td small {
   }
 }
 
+/* ── Midnight product theme ────────────────────────────────
+   A restrained, high-contrast system inspired by the local Linear reference.
+   #111826 is intentionally the canvas; blue is reserved for actions and data. */
+:root {
+  --canvas: #111826;
+  --surface: #172033;
+  --surface-raised: #1c2740;
+  --surface-hover: #22304c;
+  --line: #2a3854;
+  --line-strong: #3b4d70;
+  --ink: #f8fbff;
+  --ink-muted: #aebbd0;
+  --ink-subtle: #71809b;
+  --blue: #5fa2fa;
+  --blue-hover: #82b8ff;
+  --blue-soft: rgba(95, 162, 250, .14);
+  --blue-glow: rgba(95, 162, 250, .22);
+  --danger: #fb7185;
+  color-scheme: dark;
+  color: var(--ink);
+  background: var(--canvas);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body,
+#root,
+.app-layout {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+h1, h2, h3, h4, strong { color: var(--ink); }
+h1 { font-weight: 650; letter-spacing: -1.2px; }
+a { color: var(--blue); }
+.muted, small, .auth-note { color: var(--ink-muted); }
+.eyebrow { color: var(--blue); letter-spacing: 1px; }
+.error { color: #fda4af; }
+
+button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--blue);
+  color: #08111f;
+  font-weight: 700;
+  box-shadow: 0 7px 18px rgba(6, 14, 27, .25);
+  transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+button:hover:not(:disabled) {
+  background: var(--blue-hover);
+  box-shadow: 0 10px 24px rgba(95, 162, 250, .22);
+  transform: translateY(-1px);
+}
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--blue-glow);
+  outline-offset: 2px;
+}
+button.secondary, .secondary {
+  background: var(--surface-raised);
+  border-color: var(--line-strong);
+  color: var(--ink);
+  box-shadow: none;
+}
+button.secondary:hover:not(:disabled), .secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--blue);
+}
+.link-button { color: var(--blue); }
+
+label, .detail-field { color: #dbe7fa; }
+input, select, textarea {
+  border-color: var(--line-strong);
+  background: #111a2b;
+  color: var(--ink);
+  border-radius: 8px;
+}
+input:hover, select:hover, textarea:hover { border-color: #52709e; }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--blue);
+  background: #111a2b;
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+input::placeholder, textarea::placeholder { color: var(--ink-subtle); }
+option { background: #172033; color: var(--ink); }
+
+/* Shell: a quiet fixed rail replaces the old top-heavy navigation. */
+.app-layout { min-height: 100svh; flex-direction: row; }
+.navbar {
+  position: sticky;
+  top: 0;
+  width: 248px;
+  height: 100svh;
+  flex: 0 0 248px;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 30px;
+  padding: 24px 14px 16px;
+  border-right: 1px solid var(--line);
+  background: #0e1523;
+  color: var(--ink);
+}
+.navbar-brand { padding: 0 10px; font-size: 15px; letter-spacing: -.2px; }
+.brand-mark { background: var(--blue); color: #08111f; border-radius: 8px; font-weight: 800; }
+.navbar nav { display: grid; gap: 3px; flex-direction: column; }
+.navbar-item {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 9px 11px;
+  color: var(--ink-muted);
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 560;
+}
+.navbar-item:hover, .navbar-item.active { background: var(--blue-soft); color: var(--ink); }
+.navbar-item.active { border-color: rgba(95, 162, 250, .22); }
+.navbar-submenu { background: #151f33; border-color: var(--line); box-shadow: 0 18px 36px rgba(0, 0, 0, .32); }
+.navbar-footer { margin-top: auto; padding: 12px 8px 0; border-top: 1px solid var(--line); }
+.navbar-profile-link:hover { background: var(--surface); }
+.navbar-user strong { color: var(--ink); }
+.navbar-user span, .navbar-signout { color: var(--ink-muted); }
+.navbar-signout:hover { color: var(--blue); background: var(--blue-soft); }
+.app-content { background: radial-gradient(circle at 80% -10%, rgba(95, 162, 250, .08), transparent 30%), var(--canvas); }
+.app-shell, .profile-page { width: min(1320px, 100%); padding: 42px 44px 56px; }
+
+/* Shared product surfaces. */
+.form-card, .modal-card, .panel-card, .employee-card, .schedule-card, .attendance-card,
+.profile-card, .table-wrap, .dashboard-filters, .payroll-screen .panel-card,
+.payroll-screen .payslip-detail-card {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: 0 14px 35px rgba(1, 6, 17, .17);
+}
+.table-wrap { border-radius: 10px; }
+th { background: #141d30; color: var(--ink-muted); border-color: var(--line); }
+td { color: #e7effc; border-color: var(--line); }
+tr:hover td, .attendance-row:hover, .employee-row:hover td, .data-row-hover:hover td { background: rgba(95, 162, 250, .055); }
+code { background: #101827; color: #c7ddff; }
+.page-header { margin-bottom: 26px; }
+.page-header h1, .dashboard-page-header h1 { color: var(--ink); }
+
+/* Authentication is intentionally spare and focused. */
+.auth-shell { background: radial-gradient(circle at 72% 15%, rgba(95, 162, 250, .15), transparent 25%), #0b1120; }
+.auth-shell::before { background: rgba(95, 162, 250, .10); }
+.auth-shell::after { background: rgba(45, 76, 128, .20); }
+.auth-card { background: rgba(23, 32, 51, .94); border-color: var(--line); box-shadow: 0 28px 80px rgba(0, 0, 0, .38); }
+.auth-card button[type="submit"] { background: var(--blue); box-shadow: 0 12px 28px rgba(95, 162, 250, .22); }
+.auth-card button[type="submit"]:hover { background: var(--blue-hover); }
+
+/* KPI cards carry the accent without becoming visual noise. */
+.dashboard-page { gap: 22px; }
+.dashboard-kpi-grid { gap: 14px; }
+.dashboard-page .panel-card { background: var(--surface); border-color: var(--line); }
+.dashboard-kpi-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 138px;
+  border-top: 1px solid rgba(95, 162, 250, .55) !important;
+  background: linear-gradient(145deg, #1c2943, #172033 72%) !important;
+}
+.dashboard-kpi-card::after { content: ""; position: absolute; width: 120px; height: 120px; right: -52px; top: -65px; border-radius: 50%; background: rgba(95, 162, 250, .11); }
+.dashboard-kpi-card .eyebrow, .dashboard-kpi-card small { color: var(--ink-muted); }
+.dashboard-kpi-card strong { position: relative; z-index: 1; color: #fff; font-size: clamp(23px, 2vw, 30px); }
+.dashboard-panel-heading h2, .payroll-screen .payrun-overview-head strong { color: var(--ink); }
+.dashboard-panel-heading > span, .structures-count { background: var(--blue-soft); color: #bdd9ff; }
+.dashboard-alert-list, .attendance-footnotes > div, .work-information, .contract-form-header,
+.contract-form-actions, .salary-structure-modal-actions { border-color: var(--line); }
+.attendance-stat-grid > div, .payroll-screen .payslip-totals span, .schedule-pattern,
+.formula-reference, .formula-example { background: #141d30; border-color: var(--line); }
+.attendance-stat-grid span, .attendance-footnotes dt, .detail-field > span { color: var(--ink-muted); }
+.attendance-stat-grid strong, .attendance-footnotes dd { color: var(--ink); }
+.dashboard-alert-list li { color: #dbe7fa; }
+.dashboard-alert-list li::before { background: var(--blue); }
+.dashboard-page .recharts-default-tooltip { background: #111a2b !important; border-color: var(--line-strong) !important; color: var(--ink) !important; }
+.recharts-tooltip-label, .recharts-tooltip-item, .recharts-legend-item-text { color: var(--ink-muted) !important; }
+
+/* Payroll and modal surfaces follow the same restrained dark language. */
+.payroll-screen .payroll-warning, .payroll-screen .payrun-actions { background: #141d30; border-color: var(--line); color: #dbe7fa; }
+.payroll-screen .selected-row, .payroll-screen .net-line td { background: rgba(95, 162, 250, .08); }
+.formula-reference h3, .formula-outputs strong, .formula-example > span { color: var(--ink); }
+.formula-reference dd, .formula-outputs span { color: var(--ink-muted); }
+.modal { background: rgba(3, 8, 18, .72); backdrop-filter: blur(6px); }
+.modal-card, .salary-structure-modal-body { background: var(--surface); }
+.salary-structure-modal-header { background: #111a2b; border-bottom: 1px solid var(--line); }
+.salary-structure-modal-header .eyebrow { color: var(--blue); }
+.salary-structure-modal-header .muted { color: var(--ink-muted); }
+.modal-dismiss { background: var(--surface-raised); color: var(--ink); border: 1px solid var(--line); }
+.modal-dismiss:hover { background: var(--surface-hover); }
+.payroll-formula-input { background: #0c1321 !important; border-color: var(--line-strong) !important; color: #dbeafe !important; }
+.payroll-formula-input:focus { border-color: var(--blue) !important; box-shadow: 0 0 0 3px var(--blue-soft) !important; }
+
+/* Semantic badges retain quick scanning while matching the dark palette. */
+.status.active, .status.approved, .status.open { color: #8ee8be; background: rgba(52, 211, 153, .13); }
+.status.pending { color: #fbd38d; background: rgba(251, 191, 36, .13); }
+.status.refused { color: #fda4af; background: rgba(251, 113, 133, .13); }
+.status.inactive { color: #fdba74; background: rgba(251, 146, 60, .13); }
+.status.archived, .status.closed { color: #b7c2d6; background: rgba(148, 163, 184, .14); }
+
+@media (max-width: 860px) {
+  .app-layout { display: block; }
+  .navbar { position: relative; width: 100%; height: auto; min-height: 0; flex-direction: row; flex-wrap: wrap; padding: 12px 16px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .navbar nav { display: flex; flex: 1 1 100%; overflow-x: auto; flex-direction: row; flex-wrap: nowrap; }
+  .navbar-footer { display: none; }
+  .navbar-submenu { position: fixed !important; left: 16px !important; min-width: 220px !important; }
+  .app-shell, .profile-page { padding: 28px 18px 42px; }
+}
+
 /* Fix specificity override & expand modal */
 .modal-card.salary-structure-modal {
   width: 95%;
@@ -2126,3 +2334,143 @@ td small {
     min-height: 224px;
   }
 }
+
+/* Final dark-theme text pass. This stays last so legacy component selectors
+   cannot reintroduce dark ink on a navy surface. */
+.profile-page,
+.profile-page .profile-card,
+.form-card,
+.modal-card,
+.employee-card,
+.schedule-card,
+.attendance-card,
+.panel-card,
+.table-wrap,
+.dashboard-filters,
+.payroll-screen .panel-card,
+.payroll-screen .payslip-detail-card { color: var(--ink); }
+
+.profile-details dt,
+.detail-field > span,
+.schedule-days-header,
+.card-badge,
+.card-meta span,
+.dashboard-filters label,
+.dashboard-kpi-card .eyebrow,
+.dashboard-kpi-card small,
+.dashboard-loading,
+.dashboard-empty,
+.dashboard-table-empty,
+.payroll-screen .empty-state { color: var(--ink-muted); }
+
+.profile-details dd,
+.profile-link,
+.smart-button,
+.employee-card-name,
+.schedule-card-name,
+.attendance-card-name,
+.card-meta,
+.live-duration,
+.attendance-summary,
+.formula-reference h3,
+.formula-example code,
+.formula-reference dt code,
+.payroll-screen .formula-preview,
+.dashboard-page-header h1,
+.dashboard-panel-heading h2,
+.dashboard-kpi-card strong,
+.attendance-stat-grid strong,
+.attendance-footnotes dd { color: var(--ink); }
+
+.profile-link,
+.smart-button,
+.attendance-card-action {
+  background: var(--surface-raised);
+  border-color: var(--line-strong);
+}
+
+.profile-card,
+.employee-card,
+.schedule-card,
+.attendance-card,
+.dashboard-page .panel-card,
+.dashboard-filters,
+.formula-reference,
+.formula-example,
+.salary-structure-modal-body { background: var(--surface); border-color: var(--line); }
+
+.formula-reference dd,
+.formula-outputs span,
+.formula-reference dd,
+.dashboard-alert-list li { color: var(--ink-muted); }
+
+.dashboard-page .panel-card { background: var(--surface); }
+.dashboard-kpi-card { background: linear-gradient(145deg, #1c2943, #172033 72%) !important; }
+.dashboard-panel-heading > span { background: var(--blue-soft); color: #bdd9ff; }
+.dashboard-alert-list, .attendance-footnotes > div { border-color: var(--line); }
+.attendance-stat-grid > div { background: #141d30; border-color: var(--line); }
+
+/* Contrast guardrails for the remaining specialised components. */
+button, button.secondary, .secondary, .smart-button, .profile-link { color: #fff; }
+button:disabled { color: rgba(255, 255, 255, .72); background: #40506d; border-color: transparent; }
+.smart-button-count { background: var(--blue); color: #fff; }
+
+.formula-reference dt code,
+.formula-reference code,
+.formula-example code,
+.payroll-screen .formula-preview {
+  background: rgba(95, 162, 250, .16);
+  color: #f8fbff;
+  border: 1px solid rgba(95, 162, 250, .25);
+}
+.formula-reference dd, .formula-example, .formula-outputs span { color: #c8d5e8; }
+.salary-structure-modal-header { background: #111a2b; border-bottom-color: var(--line); }
+.salary-structure-modal-header .eyebrow { color: var(--blue); }
+
+/* Text-bearing content defaults to high-contrast ink inside every dark product surface. */
+.profile-card p, .profile-card li,
+.employee-card p, .employee-card li,
+.schedule-card p, .schedule-card li,
+.attendance-card p, .attendance-card li,
+.panel-card p, .panel-card li,
+.modal-card p, .modal-card li,
+.form-card p, .form-card li,
+.table-wrap caption { color: var(--ink); }
+.profile-card .muted, .employee-card .muted, .schedule-card .muted,
+.attendance-card .muted, .panel-card .muted, .modal-card .muted,
+.form-card .muted { color: var(--ink-muted); }
+
+.contract-form-header, .contract-form-actions, .work-information,
+.salary-structure-modal-actions, .structures-list-heading { border-color: var(--line); }
+.structures-list-heading { background: #141d30; }
+
+/* Anchor actions receive the same affordance as buttons. */
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: .15px;
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(95, 162, 250, .20);
+  transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+.button-link:hover {
+  background: var(--blue-hover);
+  color: #fff;
+  box-shadow: 0 11px 24px rgba(95, 162, 250, .28);
+  transform: translateY(-1px);
+}
+.button-link:focus-visible {
+  outline: 3px solid var(--blue-glow);
+  outline-offset: 2px;
+}
+.page-actions .secondary { min-height: 44px; }

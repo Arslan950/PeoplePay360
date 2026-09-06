@@ -23,7 +23,7 @@ const money = (value) => Number(value || 0).toLocaleString(undefined, {
   maximumFractionDigits: 0,
 });
 const number = (value) => Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
-const statusColors = ["#0d6b5c", "#2f806f", "#82a99e", "#c6ddd6", "#d19a43"];
+const statusColors = ["#5fa2fa", "#8cc3ff", "#607eae", "#3a4d70", "#f0b86e"];
 
 function EmptyChart({ children }) {
   return <p className="dashboard-empty muted">{children}</p>;
@@ -111,12 +111,12 @@ export default function DashboardPage() {
       <section className="dashboard-chart-grid" aria-label="Payroll charts">
         <article className="panel-card dashboard-chart-card">
           <div className="dashboard-panel-heading"><div><p className="eyebrow">Payroll cost</p><h2>Salary Cost by Department</h2></div><span>Historical net pay</span></div>
-          {data.departmentCosts.length ? <div className="dashboard-chart"><ResponsiveContainer width="100%" height="100%"><BarChart data={data.departmentCosts} margin={{ top: 8, right: 6, left: 0, bottom: 0 }}><CartesianGrid vertical={false} stroke="#e7efec" /><XAxis dataKey="department" tick={{ fill: "#4e6960", fontSize: 12 }} tickLine={false} axisLine={false} /><YAxis tickFormatter={(value) => `${Math.round(value / 1000)}k`} tick={{ fill: "#4e6960", fontSize: 12 }} tickLine={false} axisLine={false} width={42} /><Tooltip formatter={(value) => money(value)} cursor={{ fill: "#f3faf7" }} /><Bar dataKey="total" name="Net salary" fill="#0d6b5c" radius={[5, 5, 0, 0]} /></BarChart></ResponsiveContainer></div> : <EmptyChart>No payroll data for these filters.</EmptyChart>}
+          {data.departmentCosts.length ? <div className="dashboard-chart"><ResponsiveContainer width="100%" height="100%"><BarChart data={data.departmentCosts} margin={{ top: 8, right: 6, left: 0, bottom: 0 }}><CartesianGrid vertical={false} stroke="#2a3854" /><XAxis dataKey="department" tick={{ fill: "#aebbd0", fontSize: 12 }} tickLine={false} axisLine={false} /><YAxis tickFormatter={(value) => `${Math.round(value / 1000)}k`} tick={{ fill: "#aebbd0", fontSize: 12 }} tickLine={false} axisLine={false} width={42} /><Tooltip formatter={(value) => money(value)} cursor={{ fill: "rgba(95, 162, 250, .10)" }} /><Bar dataKey="total" name="Net salary" fill="#5fa2fa" radius={[5, 5, 0, 0]} /></BarChart></ResponsiveContainer></div> : <EmptyChart>No payroll data for these filters.</EmptyChart>}
         </article>
 
         <article className="panel-card dashboard-chart-card">
           <div className="dashboard-panel-heading"><div><p className="eyebrow">Payroll trend</p><h2>Monthly Net Salary Trend</h2></div><span>Historical net pay</span></div>
-          {data.monthlyNetSalaryTrend.length ? <div className="dashboard-chart"><ResponsiveContainer width="100%" height="100%"><LineChart data={data.monthlyNetSalaryTrend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}><CartesianGrid vertical={false} stroke="#e7efec" /><XAxis dataKey="label" tick={{ fill: "#4e6960", fontSize: 12 }} tickLine={false} axisLine={false} /><YAxis tickFormatter={(value) => `${Math.round(value / 1000)}k`} tick={{ fill: "#4e6960", fontSize: 12 }} tickLine={false} axisLine={false} width={42} /><Tooltip formatter={(value) => money(value)} /><Line type="monotone" dataKey="total" name="Net salary" stroke="#0d6b5c" strokeWidth={3} dot={{ r: 3, fill: "#0d6b5c" }} activeDot={{ r: 5 }} /></LineChart></ResponsiveContainer></div> : <EmptyChart>No payroll data for these filters.</EmptyChart>}
+          {data.monthlyNetSalaryTrend.length ? <div className="dashboard-chart"><ResponsiveContainer width="100%" height="100%"><LineChart data={data.monthlyNetSalaryTrend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}><CartesianGrid vertical={false} stroke="#2a3854" /><XAxis dataKey="label" tick={{ fill: "#aebbd0", fontSize: 12 }} tickLine={false} axisLine={false} /><YAxis tickFormatter={(value) => `${Math.round(value / 1000)}k`} tick={{ fill: "#aebbd0", fontSize: 12 }} tickLine={false} axisLine={false} width={42} /><Tooltip formatter={(value) => money(value)} /><Line type="monotone" dataKey="total" name="Net salary" stroke="#5fa2fa" strokeWidth={3} dot={{ r: 3, fill: "#5fa2fa" }} activeDot={{ r: 5 }} /></LineChart></ResponsiveContainer></div> : <EmptyChart>No payroll data for these filters.</EmptyChart>}
         </article>
 
         <article className="panel-card dashboard-chart-card dashboard-alert-card">
