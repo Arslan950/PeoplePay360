@@ -12,11 +12,12 @@ import AttendanceDetailPage from './features/attendance/AttendanceDetailPage'
 import TimeoffPage from './features/timeoff/TimeoffPage'
 import PayrollPage from './features/payroll/PayrollPage'
 import UserProfilePage from './features/users/UserProfilePage'
+import { HR_ROLES, PAYROLL_ROLES } from './common/utils/roles'
 
 function LoginRoute() {
   const { user } = useAuth()
 
-  if (user) return <Navigate to="/employees" replace />
+  if (user) return <Navigate to={PAYROLL_ROLES.includes(user.role) ? "/payroll/dashboard" : user.role === "employee" ? "/attendance" : "/employees"} replace />
   return <LoginPage />
 }
 
@@ -29,19 +30,28 @@ function AppLayout() {
   </div>
 }
 
+function HomeRoute() {
+  const { user } = useAuth()
+  return <Navigate to={PAYROLL_ROLES.includes(user?.role) ? "/payroll/dashboard" : user?.role === "employee" ? "/attendance" : "/employees"} replace />
+}
+
 function AppRoutes() {
   return <Routes>
     <Route path="/login" element={<LoginRoute />} />
     <Route element={<ProtectedRoute />}>
       <Route element={<AppLayout />}>
-        <Route index element={<Navigate to="/payroll/dashboard" replace />} />
-        <Route path="/employees/*" element={<EmployeesPage />} />
-        <Route path="/contracts" element={<ContractsPage />} />
-        <Route path="/schedules/*" element={<SchedulesPage />} />
+        <Route index element={<HomeRoute />} />
+        <Route element={<ProtectedRoute roles={HR_ROLES} />}>
+          <Route path="/employees/*" element={<EmployeesPage />} />
+          <Route path="/contracts" element={<ContractsPage />} />
+          <Route path="/schedules/*" element={<SchedulesPage />} />
+        </Route>
         <Route path="/attendance" element={<AttendancePage />} />
         <Route path="/attendance/:id" element={<AttendanceDetailPage />} />
         <Route path="/timeoff" element={<TimeoffPage />} />
-        <Route path="/payroll/*" element={<PayrollPage />} />
+        <Route element={<ProtectedRoute roles={PAYROLL_ROLES} />}>
+          <Route path="/payroll/*" element={<PayrollPage />} />
+        </Route>
         <Route path="/profile/:userId" element={<UserProfilePage />} />
       </Route>
     </Route>

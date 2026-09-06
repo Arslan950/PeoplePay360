@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
+import { HR_ROLES, canAccess } from "../../common/utils/roles";
 import { archiveSchedule, getSchedules, reactivateSchedule } from "./scheduleApi";
 
 export default function SchedulesListPage({ onAdd, onEdit }) {
@@ -8,7 +9,7 @@ export default function SchedulesListPage({ onAdd, onEdit }) {
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [view, setView] = useState("list");
-  const canManageSchedules = user?.role === "admin" || user?.role === "hr_manager";
+  const canManageSchedules = canAccess(user, HR_ROLES);
 
   const load = () => {
     getSchedules({ status })

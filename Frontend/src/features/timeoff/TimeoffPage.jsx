@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
+import { HR_ROLES, canAccess } from "../../common/utils/roles";
 import { useSearchParams } from "react-router-dom";
 import {
 	getTimeoffTypes,
@@ -19,7 +20,7 @@ export default function TimeoffPage() {
 	const { user } = useAuth();
 	const [searchParams] = useSearchParams();
 	const [activeTab, setActiveTab] = useState("requests");
-	const isApprover = user?.role === "admin" || user?.role === "hr_manager";
+	const isApprover = canAccess(user, HR_ROLES);
 	const isEmployee = user?.role === "employee";
 
 	return (

@@ -5,8 +5,8 @@ import { getContracts, getContractById, createContract, updateContract } from ".
 
 const router = Router();
 
-router.get("/", requireAuth, getContracts);
-router.get("/:id", requireAuth, getContractById);
+router.get("/", requireAuth, requireRole("admin", "hr_manager"), getContracts);
+router.get("/:id", requireAuth, requireRole("admin", "hr_manager"), getContractById);
 router.post("/", requireAuth, requireRole("admin", "hr_manager"), createContract);
 router.put("/:id", requireAuth, requireRole("admin", "hr_manager"), updateContract);
 

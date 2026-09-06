@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { HR_ROLES, canAccess } from "../../common/utils/roles";
 import { correctAttendance, getAttendanceById } from "./attendanceApi";
 
 const toDateTimeInput = (value) => {
@@ -20,7 +21,7 @@ export default function AttendanceDetailPage() {
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const canEdit = user?.role === "admin" || user?.role === "hr_manager";
+  const canEdit = canAccess(user, HR_ROLES);
 
   const load = async () => {
     try {

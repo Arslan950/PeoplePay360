@@ -2,16 +2,18 @@ import { useState } from 'react'
 import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../features/auth/AuthContext'
 import { LogOut, ChevronDown, ChevronRight } from "lucide-react"
+import { HR_ROLES, PAYROLL_ROLES, canAccess } from '../utils/roles'
 
 const navigationItems = [
-  { id: 'employees', label: 'Employees', path: '/employees' },
-  { id: 'contracts', label: 'Contracts', path: '/contracts' },
-  { id: 'schedules', label: 'Schedules', path: '/schedules' },
+  { id: 'employees', label: 'Employees', path: '/employees', roles: HR_ROLES },
+  { id: 'contracts', label: 'Contracts', path: '/contracts', roles: HR_ROLES },
+  { id: 'schedules', label: 'Schedules', path: '/schedules', roles: HR_ROLES },
   { id: 'attendance', label: 'Attendance', path: '/attendance' },
   { id: 'timeoff', label: 'Time off', path: '/timeoff' },
   {
     id: 'payroll',
     label: 'Payroll',
+    roles: PAYROLL_ROLES,
     children: [
       { id: 'payroll-dashboard', label: 'Dashboard', path: '/payroll/dashboard' },
       { id: 'payroll-payruns', label: 'Payruns', path: '/payroll/payruns' },
@@ -46,7 +48,7 @@ export default function Sidebar() {
       </div>
 
       <nav aria-label="Main navigation">
-        {navigationItems.map((item) => {
+        {navigationItems.filter((item) => !item.roles || canAccess(user, item.roles)).map((item) => {
           if (item.children) {
             return (
               <div key={item.id} className="navbar-group">

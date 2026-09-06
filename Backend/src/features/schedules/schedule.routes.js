@@ -12,8 +12,8 @@ import {
 
 const router = Router();
 
-router.get("/", requireAuth, getSchedules);
-router.get("/:id", requireAuth, getScheduleById);
+router.get("/", requireAuth, requireRole("admin", "hr_manager"), getSchedules);
+router.get("/:id", requireAuth, requireRole("admin", "hr_manager"), getScheduleById);
 router.post("/", requireAuth, requireRole("admin", "hr_manager"), createSchedule);
 router.put("/:id", requireAuth, requireRole("admin", "hr_manager"), updateSchedule);
 router.put("/:id/archive", requireAuth, requireRole("admin", "hr_manager"), archiveSchedule);

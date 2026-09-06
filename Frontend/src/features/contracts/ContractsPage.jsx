@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { HR_ROLES, canAccess } from "../../common/utils/roles";
 import ContractFormPage from "./ContractFormPage";
 import { getContracts } from "./contractApi";
 
@@ -12,7 +13,7 @@ export default function ContractsPage() {
   const [editingContract, setEditingContract] = useState(undefined);
   const [error, setError] = useState("");
   const scopedEmployeeId = searchParams.get("employee");
-  const canManageContracts = user?.role === "admin" || user?.role === "hr_manager";
+  const canManageContracts = canAccess(user, HR_ROLES);
 
   const load = async () => {
     try {

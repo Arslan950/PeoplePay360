@@ -25,8 +25,8 @@ const resetPasswordLimiter = rateLimit({
     legacyHeaders: false, 
 });
 
-router.get("/", requireAuth, getEmployees);
-router.get("/:id", requireAuth, getEmployeeById);
+router.get("/", requireAuth, requireRole("admin", "hr_manager"), getEmployees);
+router.get("/:id", requireAuth, requireRole("admin", "hr_manager"), getEmployeeById);
 router.post("/:id/credentials", requireAuth, requireRole("admin", "hr_manager"), resetPasswordLimiter, resetEmployeeCredentials);
 router.post("/", requireAuth, requireRole("admin", "hr_manager"), createEmployee);
 router.put("/:id", requireAuth, requireRole("admin", "hr_manager"), updateEmployee);

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import { PAYROLL_MANAGER_ROLES, canAccess } from "../../common/utils/roles";
 import { computePayrun, getPayrun, markPayrunPaid, payslipPdfUrl, sendPayrunPayslips, validatePayrun } from "./payrollApi";
 
 const money = (value) => Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -7,6 +9,8 @@ const periodLabel = (period) => `${new Date(period.startDate).toLocaleDateString
 const badgeClass = (status) => ({ paid: "active", validated: "approved", computed: "pending", draft: "closed" }[status] || "closed");
 
 export default function PayrunDetailPage() {
+	const { user } = useAuth();
+	const canFinalizePayrun = canAccess(user, PAYROLL_MANAGER_ROLES);
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
@@ -43,7 +47,7 @@ export default function PayrunDetailPage() {
       <div className="smart-buttons-bar payrun-actions">
         {payrun.status === "draft" && <button type="button" onClick={() => action("compute")} disabled={Boolean(working)}>{working === "compute" ? "Computing…" : "Compute"}</button>}
         {payrun.status === "computed" && <><button type="button" className="secondary" onClick={() => action("compute")} disabled={Boolean(working)}>Recompute</button><button type="button" onClick={() => action("validate")} disabled={Boolean(working)}>{working === "validate" ? "Validating…" : "Validate"}</button></>}
-        {payrun.status === "validated" && <button type="button" onClick={() => action("paid")} disabled={Boolean(working)}>{working === "paid" ? "Marking…" : "Mark Paid"}</button>}
+        {payrun.status === "validated" && canFinalizePayrun && <button type="button" onClick={() => action("paid")} disabled={Boolean(working)}>{working === "paid" ? "Marking…" : "Mark Paid"}</button>}
         {['validated', 'paid'].includes(payrun.status) && <button type="button" className="secondary" onClick={() => action("send")} disabled={Boolean(working)}>{working === "send" ? "Sending…" : "SEND PAYSLIPS"}</button>}
       </div>
       {error && <p className="error">{error}</p>}{notice && <p className="success-message">{notice}</p>}

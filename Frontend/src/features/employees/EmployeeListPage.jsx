@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { HR_ROLES, canAccess } from "../../common/utils/roles";
 
 
 import { deactivateEmployee, getEmployees, reactivateEmployee, resetEmployeeCredentials } from "./employeeApi";
@@ -15,8 +16,8 @@ export default function EmployeeListPage({ onAdd, onEdit }) {
   const [credentials, setCredentials] = useState(null);
   const [error, setError] = useState("");
 
-  const canManageEmployees = user?.role === "admin" || user?.role === "hr_manager";
-  const canManageCredentials = user?.role === "admin" || user?.role === "hr_manager";
+  const canManageEmployees = canAccess(user, HR_ROLES);
+  const canManageCredentials = canAccess(user, HR_ROLES);
 
   const load = () => getEmployees(filters).then(setEmployees).catch((requestError) => setError(requestError.message));
 

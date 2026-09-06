@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../auth/AuthContext";
+import { PAYROLL_MANAGER_ROLES, canAccess } from "../../common/utils/roles";
 import { createSalaryStructure, deleteSalaryStructure, getSalaryStructures, updateSalaryStructure } from "./payrollApi";
 
 const DEFAULT_FORMULA = [
@@ -11,6 +13,8 @@ const DEFAULT_FORMULA = [
 const blankStructure = { name: "", description: "", mathematicalFormula: DEFAULT_FORMULA };
 
 export default function SalaryStructuresPage() {
+	const { user } = useAuth();
+	const canManageStructures = canAccess(user, PAYROLL_MANAGER_ROLES);
   const [structures, setStructures] = useState([]);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(blankStructure);
@@ -76,12 +80,12 @@ export default function SalaryStructuresPage() {
   };
 
   return <main className="app-shell payroll-screen salary-structures-page">
-    <header className="page-header"><div><p className="eyebrow">PeoplePay360 / Payroll</p><h1>Salary Structures</h1><p className="muted">Define reusable payroll calculations in one clear formula.</p></div><div className="page-actions"><button type="button" onClick={() => openEditor()}>NEW STRUCTURE</button></div></header>
+    <header className="page-header"><div><p className="eyebrow">PeoplePay360 / Payroll</p><h1>Salary Structures</h1><p className="muted">Define reusable payroll calculations in one clear formula.</p></div>{canManageStructures && <div className="page-actions"><button type="button" onClick={() => openEditor()}>NEW STRUCTURE</button></div>}</header>
     {error && !editorOpen && <p className="error">{error}</p>}
     <section className="table-wrap salary-structures-list" aria-label="Salary structures">
       <div className="structures-list-heading"><div><h2>Structures</h2><p className="muted">Select a structure to review or edit its formula.</p></div><span className="structures-count">{structures.length} {structures.length === 1 ? "structure" : "structures"}</span></div>
       <table><thead><tr><th>Name</th><th>Description</th><th>Formula</th></tr></thead><tbody>
-        {structures.map((structure) => <tr className={selected?._id === structure._id ? "selected-row attendance-row" : "attendance-row"} key={structure._id} onClick={() => openEditor(structure)}><td><strong>{structure.name}</strong></td><td>{structure.description || "—"}</td><td><code className="formula-preview" title={structure.mathematicalFormula}>{structure.mathematicalFormula}</code></td></tr>)}
+        {structures.map((structure) => <tr className={selected?._id === structure._id ? "selected-row attendance-row" : "attendance-row"} key={structure._id} onClick={canManageStructures ? () => openEditor(structure) : undefined}><td><strong>{structure.name}</strong></td><td>{structure.description || "—"}</td><td><code className="formula-preview" title={structure.mathematicalFormula}>{structure.mathematicalFormula}</code></td></tr>)}
         {!structures.length && <tr><td colSpan="3" className="empty-state">No salary structures configured. Create one to define a payroll calculation.</td></tr>}
       </tbody></table>
     </section>
